@@ -25,7 +25,9 @@ window.fixPoster = async (imgEl, titleEn) => {
       return;
     }
   } catch (_) {}
-  imgEl.src = `https://placehold.co/300x450/111/555?text=No+Image`;
+  
+  // Хатуу бичсэн линкийг config-оос авдаг болгосон
+  imgEl.src = window.FALLBACK_POSTER; 
 };
 
 export function fillRow(rowId, items, isSeries = false) {
