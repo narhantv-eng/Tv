@@ -92,7 +92,7 @@ function startSlide() {
   hInt = setInterval(() => {
     const cont = document.getElementById('heroVideoContainer');
     if (!cont?.hasChildNodes()) window.setHero((hi + 1) % window.HERO_MOVIES.length);
-  }, 12000);
+  }, window.HERO_TIMER || 12000); // <-- Динамик хугацаа
 }
 
 // ── Хуудас бүрт hero тохируулах ──────────────────────────────
@@ -115,7 +115,7 @@ window.setPageHero = function(page) {
       window.fetchTMDBNowPlaying();
     }
 
-  // ── ТОГЛООМЫН HERO (Зөвхөн чимэглэл, ард бичлэг явна) ──
+  // ── ТОГЛООМЫН HERO ──
   } else if (page === 'games') {
     window.stopTrailer?.();
     clearInterval(hInt);
@@ -128,7 +128,6 @@ window.setPageHero = function(page) {
       const g = games[idx];
       if (!g) return;
 
-      // YouTube-ийн зургийг автоматаар татаж арын фон болгох
       const posterUrl = `https://img.youtube.com/vi/${g.trailer}/hqdefault.jpg`;
       showPoster(posterUrl);
 
@@ -154,7 +153,6 @@ window.setPageHero = function(page) {
 
       const btns = document.getElementById('heroBtns');
       if (btns) {
-        // Хэн ч тоглохгүй тул "Трейлер үзэх" гэж өөрчиллөө
         btns.innerHTML = `
           <button class="btn-watch" onclick="window.openPlayer({title: '${g.title}', embed: 'https://www.youtube.com/embed/${g.trailer}?autoplay=1'})">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Трейлер үзэх
@@ -167,7 +165,6 @@ window.setPageHero = function(page) {
 
       window.hideVolBtn?.();
 
-      // YouTube trailer ард тоглуулах
       window.stopTrailer?.();
       const ytUrl = `https://www.youtube.com/watch?v=${g.trailer}`;
       const type  = window.detectTrailerType?.(ytUrl);
@@ -198,7 +195,7 @@ window.setPageHero = function(page) {
           gi = (gi + 1) % games.length;
           showGame(gi);
         }
-      }, 14000);
+      }, window.GAME_TIMER || 14000); // <-- Динамик хугацаа
     }
 
     showGame(0);
@@ -237,7 +234,10 @@ window.setPageHero = function(page) {
     }
     window.hideVolBtn?.();
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=Ulaanbaatar&appid=${window.OW_KEY}&units=metric`)
+    // <-- Динамик хотын нэр
+    const cityQuery = window.DEFAULT_CITY || 'Ulaanbaatar';
+    
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityQuery}&appid=${window.OW_KEY}&units=metric`)
       .then(r => r.json())
       .then(d => {
         if (!d?.main) return;
@@ -253,7 +253,7 @@ window.setPageHero = function(page) {
         else if (cond.includes('mist') || cond.includes('fog')) icon = '🌫️';
 
         const t = document.getElementById('heroTitle');
-        if (t) t.textContent = `${icon} Улаанбаатар  ${temp > 0 ? '+' : ''}${temp}°C`;
+        if (t) t.textContent = `${icon} ${cityQuery}  ${temp > 0 ? '+' : ''}${temp}°C`;
 
         const m = document.getElementById('heroMeta');
         if (m) m.innerHTML = `
