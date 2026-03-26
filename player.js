@@ -3,8 +3,10 @@ import './player-hls.js';
 
 window.openPlayer = (m) => {
   if (!window.currentUser) {
-    window.closeM('movieModal'); window.openAuth('login');
-    return window.toast('Үзэхийн тулд нэвтэрнэ үү 🔐');
+    window.closeM('movieModal'); 
+    // ЭНД ӨӨРЧЛӨЛТ ОРСОН: login биш register дуудна
+    window.openAuth('register');
+    return window.toast('Үзэхийн тулд бүртгүүлнэ үү 🔐');
   }
   const wrap = document.getElementById('playerWrap');
   const p2p  = document.getElementById('p2pStatus');
