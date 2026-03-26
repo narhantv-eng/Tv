@@ -32,7 +32,7 @@ window.GAMES_LIST =[
     title: 'Valorant',    
     cat: 'shooter',  
     emoji: '🎯', 
-    color: ['#ff4655','#cc3844','#992a33'], 
+    color:['#ff4655','#cc3844','#992a33'], 
     desc: '5v5 Буудлага', 
     embed: 'https://www.youtube.com/embed/e_E9W2vsRbQ?autoplay=1', 
     trailer: 'e_E9W2vsRbQ' 
@@ -41,7 +41,7 @@ window.GAMES_LIST =[
     title: 'Mobile Legends', 
     cat: 'strategy', 
     emoji: '⚔️', 
-    color: ['#00008b','#00005c','#00002e'], 
+    color:['#00008b','#00005c','#00002e'], 
     desc: 'Гар утасны MOBA', 
     embed: 'https://www.youtube.com/embed/W1ZJ1Hj2kQY?autoplay=1', 
     trailer: 'W1ZJ1Hj2kQY' 
