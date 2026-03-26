@@ -18,7 +18,6 @@ window.buildGamesPage = function() {
   if (!bar) return;
   bar.innerHTML = '';
   
-  // "Бүгд" гэсэн товч нэмэх
   const allBtn = document.createElement('button');
   allBtn.className = 'gpill on';
   allBtn.textContent = '🌐 Бүгд';
@@ -29,18 +28,19 @@ window.buildGamesPage = function() {
   };
   bar.appendChild(allBtn);
 
-  // Ангиллын товчнуудыг GAME_SECTIONS-ээс татаж үүсгэх
-  window.GAME_SECTIONS.forEach((c) => {
-    const pill = document.createElement('button');
-    pill.className = 'gpill';
-    pill.textContent = c.title;
-    pill.onclick = () => { 
-      bar.querySelectorAll('.gpill').forEach(p => p.classList.remove('on')); 
-      pill.classList.add('on'); 
-      renderGamesGrid(c.key); 
-    };
-    bar.appendChild(pill);
-  });
+  if (window.GAME_SECTIONS) {
+    window.GAME_SECTIONS.forEach((c) => {
+      const pill = document.createElement('button');
+      pill.className = 'gpill';
+      pill.textContent = c.title;
+      pill.onclick = () => { 
+        bar.querySelectorAll('.gpill').forEach(p => p.classList.remove('on')); 
+        pill.classList.add('on'); 
+        renderGamesGrid(c.key); 
+      };
+      bar.appendChild(pill);
+    });
+  }
   
   renderGamesGrid('');
 };
@@ -49,7 +49,6 @@ function renderGamesGrid(catKey) {
   const grid = document.getElementById('gamesGrid');
   if (!grid) return;
   
-  // Кино хуудастай яг ижил mgrid класс ашиглах
   grid.className = 'mgrid'; 
   grid.innerHTML = '';
   
@@ -57,7 +56,6 @@ function renderGamesGrid(catKey) {
     ? window.GAMES_LIST 
     : window.GAMES_LIST.filter(g => g.cat === catKey);
 
-  // Тоглоомуудыг кино шиг босоо (Poster) картаар харуулах
   items.forEach(g => {
     grid.appendChild(window.makeGamePosterCard(g));
   });

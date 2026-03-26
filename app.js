@@ -15,8 +15,8 @@ import { buildMoviesPage } from './movies.js';
 import { buildSeriesPage } from './series.js';
 import './search.js';
 
-window.MOVIES = [];
-window.SERIES = [];
+window.MOVIES =[];
+window.SERIES =[];
 
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
@@ -29,11 +29,10 @@ window.scrollRow = function(id, dx) {
 
 async function loadData() {
   try {
-    // HTML доторх текстүүдийг config-оос авч динамикаар солих
     const titleEl = document.getElementById('appTitle');
     const phoneEl = document.getElementById('contactPhoneEl');
-    if (titleEl) titleEl.textContent = `Nabooshy - ${window.CURRENT_YEAR} Оны Ухаалаг Платформ`;
-    if (phoneEl) phoneEl.textContent = window.CONTACT_PHONE;
+    if (titleEl) titleEl.textContent = `Nabooshy - ${window.CURRENT_YEAR || 2026} Оны Ухаалаг Платформ`;
+    if (phoneEl) phoneEl.textContent = window.CONTACT_PHONE || '9937-6238';
 
     window.MOVIES = [];
     window.SERIES =[];
@@ -48,8 +47,8 @@ async function loadData() {
         id:       (isSeries ? 's' : 'm') + i,
         title:    item.mongolian_title || item.title,
         title_en: item.title,
-        year:     item.year || window.FALLBACK_YEAR, // Динамик болгосон
-        rating:   item.ratings?.imdb ? parseFloat(item.ratings.imdb) : window.FALLBACK_RATING, // Динамик болгосон
+        year:     item.year || window.FALLBACK_YEAR || 2024,
+        rating:   item.ratings?.imdb ? parseFloat(item.ratings.imdb) : (window.FALLBACK_RATING || 7.0),
         poster:   (item.poster_link || '').replace(
           /http(s)?:\/\/www\.themoviedb\.org\/t\/p\/(original|w500)\//g,
           'https://image.tmdb.org/t/p/w500/'
@@ -66,15 +65,6 @@ async function loadData() {
         window.MOVIES.push({ ...base, embed: item.embed_links?.[0] || '' });
       }
     });
-
-    buildHomeRows();
-    if (window.fetchTMDBNowPlaying) window.fetchTMDBNowPlaying();
-
-  } catch (e) {
-    window.toast('Өгөгдөл татахад алдаа!');
-    console.error(e);
-  }
-}
 
     buildHomeRows();
     if (window.fetchTMDBNowPlaying) window.fetchTMDBNowPlaying();
