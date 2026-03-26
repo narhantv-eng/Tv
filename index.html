@@ -2,7 +2,7 @@
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#E50914">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Nabooshy - 2026 Оны Ухаалаг Платформ</title>
@@ -35,10 +35,11 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="searchIn" type="text" placeholder="Хайх..." oninput="doSearch(this.value)" onfocus="gotoPage('search')">
     </div>
-    <button class="nav-contact" id="navLoginBtn" onclick="openAuth('login')">Нэвтрэх</button>
+    <!-- Гар утсан дээр энэ товч харагдахгүй (CSS-ээр нуусан) -->
+    <button class="nav-contact desktop-only" id="navLoginBtn" onclick="openAuth('register')">Нэвтрэх</button>
     <div class="nav-user" id="navUserBtn" style="display:none" onclick="logoutUser()">
       <div class="nav-avatar" id="navAvatar">U</div>
-      <span id="navUserName">Хэрэглэгч</span>
+      <span id="navUserName" class="desktop-only">Хэрэглэгч</span>
     </div>
   </div>
 </nav>
@@ -67,7 +68,6 @@
 <!-- ===================== MOVIES (КИНО) ===================== -->
 <div class="page active" id="page-movies">
   <main style="margin-top:-40px;position:relative;z-index:10;">
-    <!-- Онцлох -->
     <section class="sec">
       <div class="sec-head">
         <div class="sec-title" style="color:var(--red);font-size:22px;">🔥 Онцлох шилдэг бүтээлүүд</div>
@@ -80,7 +80,6 @@
       </div>
     </section>
 
-    <!-- Цуврал -->
     <section class="sec">
       <div class="sec-head">
         <div class="sec-title">📺 Шилдэг цувралууд</div>
@@ -93,10 +92,8 @@
       </div>
     </section>
 
-    <!-- Динамик 19 төрлийн мөр -->
     <div id="dynamicRows"></div>
 
-    <!-- Тоглоомын preview мөр -->
     <section class="sec">
       <div class="sec-head">
         <div class="sec-title">🎮 Онлайн Тоглоомууд</div>
@@ -109,7 +106,6 @@
       </div>
     </section>
 
-    <!-- Олон улс -->
     <section class="sec" style="margin-top:60px;border-top:1px solid var(--border);padding-top:40px;">
       <div class="sec-head">
         <div class="sec-title" style="color:var(--blue);">🌍 Дэлхийд яг одоо гарч буй кинонууд</div>
@@ -121,7 +117,6 @@
       </div>
     </section>
 
-    <!-- Бүх кино grid (нуугдсан байгаа, Бүгд дарахад гарна) -->
     <div id="moviesFullSection" style="display:none;">
       <div class="page-header" style="margin-top:40px;">
         <h1 class="page-h1">🎬 Бүх кино</h1>
@@ -131,7 +126,6 @@
       <div class="mgrid" id="moviesGrid"></div>
     </div>
 
-    <!-- Бүх цуврал grid (нуугдсан байгаа) -->
     <div id="seriesFullSection" style="display:none;">
       <div class="page-header" style="margin-top:40px;">
         <h1 class="page-h1">📺 Цуврал кино</h1>
@@ -179,24 +173,17 @@
   </main>
 </div>
 
-<!-- ===================== AUTH MODAL ===================== -->
+<!-- ===================== AUTH MODAL (BOTTOM SHEET) ===================== -->
 <div class="auth-modal-bg" id="authModal" onclick="if(event.target===this)closeAuth()">
   <div class="auth-box">
-    <button class="mcls" onclick="closeAuth()">✕</button>
+    <div class="bottom-sheet-handle"></div>
+    <button class="mcls desktop-only" onclick="closeAuth()">✕</button>
+    
     <div class="auth-logo"><div class="logo-mark">N</div><div class="logo-name">NABOO<span style="color:var(--red)">SHY</span></div></div>
-    <div id="authLogin">
-      <div class="auth-title">Нэвтрэх</div>
-      <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
-      <div class="auth-field"><label>Нууц үг</label><input type="password" id="loginPass" placeholder="••••••••"></div>
-      <div class="auth-field" style="background:rgba(255,255,255,.05);padding:10px;border-radius:6px;border:1px solid var(--border2);">
-        <label style="color:var(--text2);">Хамгаалалт: <span id="captchaQuestionLogin" style="color:var(--gold);font-size:16px;"></span></label>
-        <input type="number" id="captchaAnswerLogin" placeholder="Хариуг бичнэ үү">
-      </div>
-      <button class="auth-btn" onclick="doLogin()">Нэвтрэх</button>
-      <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлгүй юу?</span> <a onclick="switchAuth('register')">Шинээр бүртгүүлэх</a></div>
-    </div>
-    <div id="authRegister" style="display:none">
-      <div class="auth-title">Бүртгүүлэх</div>
+    <p style="text-align:center; color:var(--text2); font-size:13px; margin-top:-20px; margin-bottom:24px;">Үргэлжлүүлэхийн тулд бүртгүүлнэ үү</p>
+    
+    <!-- БҮРТГҮҮЛЭХ ХЭСЭГ (Анхдагч) -->
+    <div id="authRegister">
       <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
       <div class="auth-field"><label>Нууц үг</label><input type="password" id="regPass" placeholder="Доод тал нь 6 тэмдэгт"></div>
       <div class="auth-field" style="background:rgba(255,255,255,.05);padding:10px;border-radius:6px;border:1px solid var(--border2);">
@@ -206,8 +193,21 @@
       <button class="auth-btn" onclick="doRegister()">Бүртгүүлэх</button>
       <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлтэй юу?</span> <a onclick="switchAuth('login')">Нэвтрэх</a></div>
     </div>
-    <div style="margin-top:25px;padding-top:15px;border-top:1px solid var(--border);text-align:center;font-size:14px;color:var(--gold);font-weight:500;line-height:1.5;">
-      📢 Зар байршуулахыг хүсвэл холбогдоно уу:<br><strong style="font-size:18px;color:#fff;">9937-6238</strong>
+
+    <!-- НЭВТРЭХ ХЭСЭГ -->
+    <div id="authLogin" style="display:none">
+      <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
+      <div class="auth-field"><label>Нууц үг</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <div class="auth-field" style="background:rgba(255,255,255,.05);padding:10px;border-radius:6px;border:1px solid var(--border2);">
+        <label style="color:var(--text2);">Хамгаалалт: <span id="captchaQuestionLogin" style="color:var(--gold);font-size:16px;"></span></label>
+        <input type="number" id="captchaAnswerLogin" placeholder="Хариуг бичнэ үү">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Нэвтрэх</button>
+      <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлгүй юу?</span> <a onclick="switchAuth('register')">Шинээр бүртгүүлэх</a></div>
+    </div>
+    
+    <div style="margin-top:25px;padding-top:15px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--text3);line-height:1.5;">
+      Зар байршуулах: <strong style="color:var(--gold);">9937-6238</strong>
     </div>
   </div>
 </div>
