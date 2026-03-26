@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#E50914">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Nabooshy - 2026 Оны Ухаалаг Платформ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-core@latest/build/p2p-media-loader-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@latest/build/p2p-media-loader-hlsjs.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="gotoPage('movies')">
+    <div class="logo-mark">N</div>
+    <div class="logo-name">NABOO<span>SHY</span></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="t-movies"  onclick="gotoPage('movies')"> <span class="tab-icon">🎬</span><span>КИНО</span></button>
+    <button class="nav-tab"        id="t-games"   onclick="gotoPage('games')">  <span class="tab-icon">🎮</span><span>ТОГЛООМ</span></button>
+    <button class="nav-tab"        id="t-weather" onclick="gotoPage('weather')"><span class="tab-icon">🌤</span><span>ЦАГ АГААР</span></button>
+    <button class="nav-tab"        id="t-search"  onclick="gotoPage('search')"> <span class="tab-icon">🔍</span><span>ХАЙХ</span></button>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap" onclick="gotoPage('search')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchIn" type="text" placeholder="Хайх..." oninput="doSearch(this.value)" onfocus="gotoPage('search')">
+    </div>
+    <button class="nav-contact" id="navLoginBtn" onclick="openAuth('login')">Нэвтрэх</button>
+    <div class="nav-user" id="navUserBtn" style="display:none" onclick="logoutUser()">
+      <div class="nav-avatar" id="navAvatar">U</div>
+      <span id="navUserName">Хэрэглэгч</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== SHARED HERO ===================== -->
+<div id="heroWrap">
+  <div class="hero" id="hero">
+    <div id="heroVideoContainer" class="hero-video-container"></div>
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-body">
+      <div class="hero-tag" id="heroTag">🔥 ДЭЛХИЙН ШИЛДЭГ</div>
+      <div class="hero-title" id="heroTitle">Ачаалж байна...</div>
+      <div class="hero-meta" id="heroMeta"></div>
+      <div class="hero-desc" id="heroDesc"></div>
+      <div class="hero-btns" id="heroBtns">
+        <button class="btn-watch" id="heroWatch"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Үзэх</button>
+        <button class="btn-more"  id="heroMore">ℹ Дэлгэрэнгүй</button>
+        <button class="btn-volume" id="heroVolumeBtn" onclick="toggleHeroVolume()">🔇 Дууг нээх</button>
+      </div>
+    </div>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+</div>
+
+<!-- ===================== MOVIES (КИНО) ===================== -->
+<div class="page active" id="page-movies">
+  <main style="margin-top:-40px;position:relative;z-index:10;">
+    <!-- Онцлох -->
+    <section class="sec">
+      <div class="sec-head">
+        <div class="sec-title" style="color:var(--red);font-size:22px;">🔥 Онцлох шилдэг бүтээлүүд</div>
+        <button class="sec-more" onclick="showMoviesGrid()">Бүгд ›</button>
+      </div>
+      <div class="row-wrap">
+        <button class="scroll-btn left" onclick="scrollRow('rowFeatured',-600)">❮</button>
+        <div class="scroll-row" id="rowFeatured"></div>
+        <button class="scroll-btn right" onclick="scrollRow('rowFeatured',600)">❯</button>
+      </div>
+    </section>
+
+    <!-- Цуврал -->
+    <section class="sec">
+      <div class="sec-head">
+        <div class="sec-title">📺 Шилдэг цувралууд</div>
+        <button class="sec-more" onclick="showSeriesGrid()">Бүгд ›</button>
+      </div>
+      <div class="row-wrap">
+        <button class="scroll-btn left" onclick="scrollRow('rowSeries',-600)">❮</button>
+        <div class="scroll-row" id="rowSeries"></div>
+        <button class="scroll-btn right" onclick="scrollRow('rowSeries',600)">❯</button>
+      </div>
+    </section>
+
+    <!-- Динамик 19 төрлийн мөр -->
+    <div id="dynamicRows"></div>
+
+    <!-- Тоглоомын preview мөр -->
+    <section class="sec">
+      <div class="sec-head">
+        <div class="sec-title">🎮 Онлайн Тоглоомууд</div>
+        <button class="sec-more" onclick="gotoPage('games')">Бүгд ›</button>
+      </div>
+      <div class="row-wrap">
+        <button class="scroll-btn left" onclick="scrollRow('rowGames',-600)">❮</button>
+        <div class="scroll-row" id="rowGames"></div>
+        <button class="scroll-btn right" onclick="scrollRow('rowGames',600)">❯</button>
+      </div>
+    </section>
+
+    <!-- Олон улс -->
+    <section class="sec" style="margin-top:60px;border-top:1px solid var(--border);padding-top:40px;">
+      <div class="sec-head">
+        <div class="sec-title" style="color:var(--blue);">🌍 Дэлхийд яг одоо гарч буй кинонууд</div>
+      </div>
+      <div class="row-wrap">
+        <button class="scroll-btn left" onclick="scrollRow('rowInternational',-600)">❮</button>
+        <div class="scroll-row" id="rowInternational"></div>
+        <button class="scroll-btn right" onclick="scrollRow('rowInternational',600)">❯</button>
+      </div>
+    </section>
+
+    <!-- Бүх кино grid (нуугдсан байгаа, Бүгд дарахад гарна) -->
+    <div id="moviesFullSection" style="display:none;">
+      <div class="page-header" style="margin-top:40px;">
+        <h1 class="page-h1">🎬 Бүх кино</h1>
+        <p class="page-sub" id="moviesCount"></p>
+      </div>
+      <div class="genre-bar" id="movieGenreBar"></div>
+      <div class="mgrid" id="moviesGrid"></div>
+    </div>
+
+    <!-- Бүх цуврал grid (нуугдсан байгаа) -->
+    <div id="seriesFullSection" style="display:none;">
+      <div class="page-header" style="margin-top:40px;">
+        <h1 class="page-h1">📺 Цуврал кино</h1>
+        <p class="page-sub" id="seriesCount"></p>
+      </div>
+      <div class="genre-bar" id="seriesGenreBar"></div>
+      <div class="mgrid" id="seriesGrid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== GAMES (ТОГЛООМ) ===================== -->
+<div class="page" id="page-games">
+  <main>
+    <div class="genre-bar" id="gameGenreBar" style="margin-top:20px;"></div>
+    <div class="mgrid" id="gamesGrid"></div>
+  </main>
+</div>
+
+<!-- ===================== WEATHER (ЦАГ АГААР) ===================== -->
+<div class="page" id="page-weather">
+  <main>
+    <div class="weather-update-bar">
+      <span id="weatherLastUpdate">⏳ Мэдээлэл татаж байна...</span>
+      <button class="weather-refresh-btn" onclick="refreshWeather()">🔄 Шинэчлэх</button>
+    </div>
+    <div class="w-grid" id="weatherGrid"></div>
+  </main>
+</div>
+
+<!-- ===================== SEARCH (ХАЙХ) ===================== -->
+<div class="page" id="page-search">
+  <main>
+    <div class="search-page-box">
+      <div class="search-page-icon">🔍</div>
+      <div class="search-page-wrap">
+        <input id="searchPageInput" type="text" class="search-page-input"
+               placeholder="Кино, цуврал, тоглоом, хот хайх..."
+               oninput="doSearch(this.value)" autofocus>
+      </div>
+      <div class="search-page-hint">Жишээ: <span onclick="doSearch('action')">action</span> · <span onclick="doSearch('дархан')">дархан</span> · <span onclick="doSearch('chess')">chess</span></div>
+    </div>
+    <div id="searchCount" style="color:var(--text2);font-size:14px;margin-bottom:16px;"></div>
+    <div class="mgrid" id="searchGrid"></div>
+  </main>
+</div>
+
+<!-- ===================== AUTH MODAL ===================== -->
+<div class="auth-modal-bg" id="authModal" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-box">
+    <button class="mcls" onclick="closeAuth()">✕</button>
+    <div class="auth-logo"><div class="logo-mark">N</div><div class="logo-name">NABOO<span style="color:var(--red)">SHY</span></div></div>
+    <div id="authLogin">
+      <div class="auth-title">Нэвтрэх</div>
+      <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
+      <div class="auth-field"><label>Нууц үг</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <div class="auth-field" style="background:rgba(255,255,255,.05);padding:10px;border-radius:6px;border:1px solid var(--border2);">
+        <label style="color:var(--text2);">Хамгаалалт: <span id="captchaQuestionLogin" style="color:var(--gold);font-size:16px;"></span></label>
+        <input type="number" id="captchaAnswerLogin" placeholder="Хариуг бичнэ үү">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Нэвтрэх</button>
+      <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлгүй юу?</span> <a onclick="switchAuth('register')">Шинээр бүртгүүлэх</a></div>
+    </div>
+    <div id="authRegister" style="display:none">
+      <div class="auth-title">Бүртгүүлэх</div>
+      <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
+      <div class="auth-field"><label>Нууц үг</label><input type="password" id="regPass" placeholder="Доод тал нь 6 тэмдэгт"></div>
+      <div class="auth-field" style="background:rgba(255,255,255,.05);padding:10px;border-radius:6px;border:1px solid var(--border2);">
+        <label style="color:var(--text2);">Хамгаалалт: <span id="captchaQuestionReg" style="color:var(--gold);font-size:16px;"></span></label>
+        <input type="number" id="captchaAnswerReg" placeholder="Хариуг бичнэ үү">
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Бүртгүүлэх</button>
+      <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлтэй юу?</span> <a onclick="switchAuth('login')">Нэвтрэх</a></div>
+    </div>
+    <div style="margin-top:25px;padding-top:15px;border-top:1px solid var(--border);text-align:center;font-size:14px;color:var(--gold);font-weight:500;line-height:1.5;">
+      📢 Зар байршуулахыг хүсвэл холбогдоно уу:<br><strong style="font-size:18px;color:#fff;">9937-6238</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PLAYER MODAL ===================== -->
+<div class="modal-bg" id="playerModal" onclick="closeMb(event,'playerModal')">
+  <div class="modal pmodal">
+    <button class="mcls" onclick="closeM('playerModal')">✕</button>
+    <div class="player-layout">
+      <div class="player-vid-sec">
+        <div class="p2p-status" id="p2pStatus" style="display:none;"><div class="p2p-dot"></div> P2P Сүлжээ идэвхтэй</div>
+        <div class="player-wrap" id="playerWrap" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
+    <div style="padding:20px 30px;background:var(--bg2);border-radius:0 0 12px 12px;">
+      <div class="m-title" id="pTitle" style="font-size:24px;margin-bottom:4px;"></div>
+      <div class="m-meta" id="pMeta" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MOVIE DETAIL MODAL ===================== -->
+<div class="modal-bg" id="movieModal" onclick="closeMb(event,'movieModal')">
+  <div class="modal">
+    <button class="mcls" onclick="closeM('movieModal')">✕</button>
+    <div class="m-hero" id="mHero"><div class="m-hero-g"></div></div>
+    <div class="m-body">
+      <div class="m-title" id="mTitle"></div>
+      <div class="m-meta" id="mMeta"></div>
+      <div class="m-desc" id="mDesc"></div>
+      <div class="m-acts" id="mActs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SERIES MODAL ===================== -->
+<div class="modal-bg" id="seriesModal" onclick="closeMb(event,'seriesModal')">
+  <div class="modal" style="max-width:900px">
+    <button class="mcls" onclick="closeM('seriesModal')">✕</button>
+    <div class="m-hero" id="smHero"><div class="m-hero-g"></div></div>
+    <div class="m-body">
+      <div class="m-title" id="smTitle"></div>
+      <div class="m-meta" id="smMeta"></div>
+      <div class="m-desc" id="smDesc"></div>
+      <div class="m-series-wrap">
+        <div class="s-tabs" id="smSeasonTabs"></div>
+        <div class="ep-grid" id="smEpGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME MODAL ===================== -->
+<div class="modal-bg" id="gameModal" onclick="closeMb(event,'gameModal')">
+  <div class="modal gmodal">
+    <button class="mcls" onclick="closeM('gameModal')">✕</button>
+    <iframe class="gm-frame" id="gmFrame" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script type="module" src="zar.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
