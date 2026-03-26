@@ -1,53 +1,41 @@
 // games-data.js
-window.GAMES_LIST =[
-  // --- 1. HERO ХЭСЭГТ ГАРАХ ТОГЛООМУУД (Trailer-тай) ---
+
+// --- 1. HERO ХЭСЭГТ ГАРАХ 5 ТРЕЙЛЕР (Зөвхөн чимэглэл зориулалттай) ---
+window.HERO_GAMES =[
   { 
     title: 'PUBG Mobile', 
-    cat: 'shooter',  
-    emoji: '🪂', 
-    color:['#ff9900','#cc7a00','#995c00'], 
-    desc: 'Battle Royale', 
-    embed: 'https://www.youtube.com/embed/ucdcqhXQZzQ?autoplay=1', 
-    trailer: 'ucdcqhXQZzQ' 
+    cat: 'Shooter',  
+    desc: 'Battle Royale - Дэлхийн хамгийн алдартай тоглоом', 
+    trailer: 'GXXEsnG14kw' // Таны өгсөн линкний ID
   },
   { 
     title: 'Dota 2',      
-    cat: 'strategy', 
-    emoji: '🧙‍♂️', 
-    color:['#8b0000','#5c0000','#2e0000'], 
-    desc: 'MOBA Тоглоом', 
-    embed: 'https://www.youtube.com/embed/-cSFPIwMEq4?autoplay=1', 
-    trailer: '-cSFPIwMEq4' 
+    cat: 'Strategy', 
+    desc: 'MOBA - Стратеги болон багийн ажиллагаа', 
+    trailer: '-cSFPIwMEq4' // 2 дахь бичлэг (Та дараа нь сольж болно)
   },
   { 
     title: 'Counter-Strike 2', 
-    cat: 'shooter',  
-    emoji: '🔫', 
-    color:['#ffcc00','#cc9900','#996600'], 
+    cat: 'Shooter',  
     desc: 'Тактикийн буудлага', 
-    embed: 'https://www.youtube.com/embed/c80dVYcL69E?autoplay=1', 
-    trailer: 'c80dVYcL69E' 
+    trailer: 'c80dVYcL69E' // 3 дахь бичлэг
   },
   { 
     title: 'Valorant',    
-    cat: 'shooter',  
-    emoji: '🎯', 
-    color:['#ff4655','#cc3844','#992a33'], 
+    cat: 'Shooter',  
     desc: '5v5 Буудлага', 
-    embed: 'https://www.youtube.com/embed/e_E9W2vsRbQ?autoplay=1', 
-    trailer: 'e_E9W2vsRbQ' 
+    trailer: 'e_E9W2vsRbQ' // 4 дэх бичлэг
   },
   { 
     title: 'Mobile Legends', 
-    cat: 'strategy', 
-    emoji: '⚔️', 
-    color:['#00008b','#00005c','#00002e'], 
+    cat: 'Strategy', 
     desc: 'Гар утасны MOBA', 
-    embed: 'https://www.youtube.com/embed/W1ZJ1Hj2kQY?autoplay=1', 
-    trailer: 'W1ZJ1Hj2kQY' 
-  },
+    trailer: 'W1ZJ1Hj2kQY' // 5 дахь бичлэг
+  }
+];
 
-  // --- 2. ВЭБ ДЭЭР ШУУД ТОГЛОХ ТОГЛООМУУД (Trailer-гүй тул Hero-д гарахгүй) ---
+// --- 2. ДООД ТАЛЫН ЖАГСААЛТАД ГАРАХ ЖИНХЭНЭ ТОГЛООМУУД ---
+window.GAMES_LIST = [
   { title:'Wordle',      cat:'puzzle',   emoji:'🔤', color:['#1a1a2e','#16213e','#0f3460'], desc:'Үг таах тоглоом',        embed:'https://wordleunlimited.org/' },
   { title:'2048',        cat:'puzzle',   emoji:'🔢', color:['#1a0a00','#3d1f00','#f5a623'], desc:'Тоон нийлүүлэлт',        embed:'https://play2048.co/' },
   { title:'Sudoku',      cat:'puzzle',   emoji:'🧩', color:['#0d1b2a','#1b2a3b','#2196f3'], desc:'Судоку тоглоом',          embed:'https://sudoku.com/' },

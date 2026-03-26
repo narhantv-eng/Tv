@@ -8,7 +8,7 @@ let hi = 0, hInt = null;
 function showPoster(url) {
   const bg  = document.querySelector('.hero-bg');
   const vig = document.querySelector('.hero-vignette');
-  if (bg)  { bg.style.backgroundImage = `url('${url}')`; bg.style.background = ''; bg.style.opacity = '1'; }
+  if (bg)  { bg.style.backgroundImage = `url('${url}')`; bg.style.backgroundSize = 'cover'; bg.style.backgroundPosition = 'center'; bg.style.opacity = '1'; }
   if (vig) vig.style.opacity = '1';
 }
 function hidePoster() {
@@ -115,11 +115,12 @@ window.setPageHero = function(page) {
       window.fetchTMDBNowPlaying();
     }
 
+  // ── ТОГЛООМЫН HERO (Зөвхөн чимэглэл, ард бичлэг явна) ──
   } else if (page === 'games') {
     window.stopTrailer?.();
     clearInterval(hInt);
 
-    const games = (window.GAMES_LIST ||[]).filter(g => g.trailer);
+    const games = window.HERO_GAMES ||[];
     if (!games.length) return;
 
     let gi = 0;
@@ -127,15 +128,9 @@ window.setPageHero = function(page) {
       const g = games[idx];
       if (!g) return;
 
-      const bg = document.querySelector('.hero-bg');
-      if (bg) {
-        const c = g.color ||['#1a1a2e','#16213e','#0f3460'];
-        bg.style.backgroundImage = '';
-        bg.style.background = `linear-gradient(135deg, ${c[0]} 0%, ${c[1]} 50%, ${c[2]} 100%)`;
-        bg.style.opacity = '1';
-      }
-      const vig = document.querySelector('.hero-vignette');
-      if (vig) vig.style.opacity = '1';
+      // YouTube-ийн зургийг автоматаар татаж арын фон болгох
+      const posterUrl = `https://img.youtube.com/vi/${g.trailer}/hqdefault.jpg`;
+      showPoster(posterUrl);
 
       const tag = document.getElementById('heroTag');
       if (tag) tag.innerHTML = `🎮 ${(g.cat || 'ТОГЛООМ').toUpperCase()}`;
@@ -144,12 +139,12 @@ window.setPageHero = function(page) {
       if (title) title.textContent = g.title;
 
       const meta = document.getElementById('heroMeta');
-      if (meta) meta.innerHTML = `<span style="font-size:28px">${g.emoji}</span><span>${g.desc}</span>`;
+      if (meta) meta.innerHTML = `<span>${g.desc}</span>`;
 
       const dotsEl = document.getElementById('heroDots');
       if (dotsEl) {
         dotsEl.innerHTML = '';
-        games.slice(0, 8).forEach((_, i) => {
+        games.forEach((_, i) => {
           const dot = document.createElement('div');
           dot.className = 'hero-dot' + (i === idx ? ' active' : '');
           dot.onclick = () => { clearInterval(hInt); gi = i; showGame(i); startGameSlide(); };
@@ -159,10 +154,10 @@ window.setPageHero = function(page) {
 
       const btns = document.getElementById('heroBtns');
       if (btns) {
-        // ЭНД ӨӨРЧЛӨЛТ ОРСОН: login биш register дуудна
+        // Хэн ч тоглохгүй тул "Трейлер үзэх" гэж өөрчиллөө
         btns.innerHTML = `
-          <button class="btn-watch" onclick="if(!window.currentUser){window.openAuth('register');return window.toast('Тоглохын тулд бүртгүүлнэ үү 🔐')}document.getElementById('gmFrame').src='${g.embed}';document.getElementById('gameModal').classList.add('open')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Тоглох
+          <button class="btn-watch" onclick="window.openPlayer({title: '${g.title}', embed: 'https://www.youtube.com/embed/${g.trailer}?autoplay=1'})">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Трейлер үзэх
           </button>
           <button class="btn-more" onclick="document.getElementById('gameGenreBar')?.scrollIntoView({behavior:'smooth'})">
             🎮 Бүгд харах
@@ -172,14 +167,14 @@ window.setPageHero = function(page) {
 
       window.hideVolBtn?.();
 
+      // YouTube trailer ард тоглуулах
       window.stopTrailer?.();
       const ytUrl = `https://www.youtube.com/watch?v=${g.trailer}`;
       const type  = window.detectTrailerType?.(ytUrl);
       if (type) {
         window.playTrailer?.(ytUrl, type,
           () => {
-            if (bg) bg.style.opacity = '0';
-            if (vig) vig.style.opacity = '0.3';
+            hidePoster();
             window.showVolBtn?.();
           },
           () => {
@@ -188,8 +183,7 @@ window.setPageHero = function(page) {
             startGameSlide();
           },
           () => {
-            if (bg) bg.style.opacity = '1';
-            if (vig) vig.style.opacity = '1';
+            showPoster(posterUrl);
             window.hideVolBtn?.();
           }
         );
