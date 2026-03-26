@@ -1,33 +1,74 @@
 // ============================================================
-// ai-assistant.js — Жинхэнэ AI (Gemini API) холбосон хувилбар
+// ai-assistant.js — Nabooshy AI (10 Key Rotation & Modern UI)
 // ============================================================
 
-// 1. ЭНД ӨӨРИЙН GEMINI API ТҮЛХҮҮРЭЭ ХИЙНЭ ҮҮ (aistudio.google.com-с үнэгүй авна)
-const GEMINI_API_KEY = 'AIzaSyB5GeZCzpGwrylytrr65RZ1aAyCLo2ti00'; 
+// 1. ЭНД 10 ХҮРТЭЛХ API ТҮЛХҮҮРЭЭ ХИЙНЭ ҮҮ (Хоосон байсан ч алдаа заахгүй)
+const API_KEYS =[
+  'AIzaSy_ЭХНИЙ_ТҮЛХҮҮРЭЭ_ЭНД_ХИЙНЭ_ҮҮ', // Түлхүүр 1
+  '', // Түлхүүр 2
+  '', // Түлхүүр 3
+  '', // Түлхүүр 4
+  '', // Түлхүүр 5
+  '', // Түлхүүр 6
+  '', // Түлхүүр 7
+  '', // Түлхүүр 8
+  '', // Түлхүүр 9
+  '', // Түлхүүр 10
+];
 
+// Зөвхөн 'AIza'-гаар эхэлсэн, хүчинтэй түлхүүрүүдийг ялгаж авах
+const validKeys = API_KEYS.filter(key => key && key.trim().startsWith('AIza'));
+
+// --- UI БОЛОН ДИЗАЙН (CSS & HTML) ---
 const aiHTML = `
-<div id="ai-bot-wrap" style="position:fixed;bottom:30px;left:30px;z-index:9999;font-family:sans-serif;">
-  <div id="ai-chat-box" style="display:none;width:320px;background:var(--bg2, #1e1e2e);border:1px solid var(--border, #333);border-radius:16px;padding:16px;margin-bottom:15px;box-shadow:0 10px 30px rgba(0,0,0,0.6);transition:all 0.3s ease;">
-    
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-      <div style="font-weight:700;color:var(--blue, #4facfe);display:flex;align-items:center;gap:8px;">
-        <span style="font-size:18px;">🤖</span> Naboo AI
-      </div>
-      <button id="ai-close-btn" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px;padding:4px;">✖</button>
-    </div>
+<style>
+  #ai-bot-wrap { position: fixed; bottom: 30px; left: 30px; z-index: 9999; font-family: 'Inter', sans-serif; }
+  #ai-chat-box { display: none; width: 340px; background: rgba(17, 17, 17, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.8); transition: all 0.3s ease; transform-origin: bottom left; }
+  .ai-header { background: linear-gradient(135deg, #1e88e5, #1565c0); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; color: #fff; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  .ai-header-title { display: flex; align-items: center; gap: 8px; }
+  .ai-header-title span { font-size: 20px; }
+  .ai-close-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.2s; }
+  .ai-close-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+  #ai-messages { height: 300px; overflow-y: auto; padding: 20px 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+  #ai-messages::-webkit-scrollbar { width: 4px; }
+  #ai-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  .msg-bubble { max-width: 85%; padding: 12px 16px; font-size: 13.5px; line-height: 1.5; word-wrap: break-word; animation: fadeIn 0.3s ease; }
+  .msg-ai { background: rgba(30,136,229,0.15); color: #e3f2fd; border-radius: 16px 16px 16px 4px; align-self: flex-start; border: 1px solid rgba(30,136,229,0.3); }
+  .msg-user { background: var(--red, #e50914); color: #fff; border-radius: 16px 16px 4px 16px; align-self: flex-end; box-shadow: 0 4px 10px rgba(229,9,20,0.3); }
+  .ai-input-area { padding: 15px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
+  #ai-input { flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 12px 16px; color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
+  #ai-input:focus { border-color: #1e88e5; background: rgba(0,0,0,0.5); }
+  #ai-send-btn { background: #1e88e5; color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  #ai-send-btn:hover { background: #1565c0; transform: scale(1.05); }
+  #ai-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #1e88e5, #1565c0); border: none; color: #fff; font-size: 28px; cursor: pointer; box-shadow: 0 8px 25px rgba(30,136,229,0.5); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; }
+  #ai-toggle-btn:hover { transform: scale(1.1) translateY(-5px); }
+  .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing-dots span { width: 6px; height: 6px; background: #4facfe; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+  .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 
-    <div id="ai-messages" style="height:250px;overflow-y:auto;font-size:13px;color:var(--text2, #ddd);margin-bottom:15px;display:flex;flex-direction:column;gap:10px;padding-right:5px;">
-      <div style="color:var(--blue, #4facfe);background:rgba(30,136,229,0.1);padding:10px 14px;border-radius:14px 14px 14px 0;align-self:flex-start;max-width:85%;line-height:1.4;">
-        Сайн уу? Би бол Naboo сайтын ухаалаг туслах байна. Та манай сайт дээрх кино, тоглоом, цаг агаарын талаар хүссэн зүйлээ асуугаарай!
+<div id="ai-bot-wrap">
+  <div id="ai-chat-box">
+    <div class="ai-header">
+      <div class="ai-header-title"><span>✨</span> Nabooshy AI</div>
+      <button class="ai-close-btn" id="ai-close-btn">✕</button>
+    </div>
+    <div id="ai-messages">
+      <div class="msg-bubble msg-ai">
+        Сайн уу? Би бол Nabooshy сайтын ухаалаг туслах байна. Танд ямар кино, тоглоом хайж өгөх вэ? 🍿🎮
       </div>
     </div>
-
-    <div style="display:flex;gap:8px;">
-      <input type="text" id="ai-input" placeholder="Асуултаа энд бичнэ үү..." style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:#fff;outline:none;font-size:13px;">
+    <div class="ai-input-area">
+      <input type="text" id="ai-input" placeholder="Энд бичнэ үү..." autocomplete="off">
+      <button id="ai-send-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
     </div>
   </div>
-
-  <button id="ai-toggle-btn" style="width:56px;height:56px;border-radius:50%;background:var(--blue, #1e88e5);border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 15px rgba(30,136,229,0.4);transition:transform 0.3s;display:flex;align-items:center;justify-content:center;">🤖</button>
+  <button id="ai-toggle-btn">🤖</button>
 </div>
 `;
 
@@ -37,36 +78,35 @@ const aiToggle = document.getElementById('ai-toggle-btn');
 const aiClose = document.getElementById('ai-close-btn');
 const aiBox = document.getElementById('ai-chat-box');
 const aiInput = document.getElementById('ai-input');
+const aiSendBtn = document.getElementById('ai-send-btn');
 const aiMsgs = document.getElementById('ai-messages');
 
+// Нээх, хаах үйлдэл
 function toggleChat() {
   const isHidden = aiBox.style.display === 'none';
   aiBox.style.display = isHidden ? 'block' : 'none';
-  aiToggle.style.transform = isHidden ? 'scale(0.9)' : 'scale(1)';
+  aiToggle.style.transform = isHidden ? 'scale(0) opacity(0)' : 'scale(1) opacity(1)';
+  aiToggle.style.display = isHidden ? 'none' : 'flex';
   if (isHidden) aiInput.focus();
 }
 
 aiToggle.onclick = toggleChat;
-aiClose.onclick = toggleChat;
+aiClose.onclick = () => {
+  aiBox.style.display = 'none';
+  aiToggle.style.display = 'flex';
+  aiToggle.style.transform = 'scale(1)';
+};
 
-function appendMessage(text, sender) {
+// Мессеж нэмэх
+function appendMessage(text, sender, isTyping = false) {
   const msgDiv = document.createElement('div');
-  msgDiv.textContent = text;
-  msgDiv.style.padding = "10px 14px";
-  msgDiv.style.maxWidth = "85%";
-  msgDiv.style.lineHeight = "1.4";
-  msgDiv.style.wordWrap = "break-word";
+  msgDiv.className = `msg-bubble ${sender === 'user' ? 'msg-user' : 'msg-ai'}`;
   
-  if (sender === 'user') {
-    msgDiv.style.color = "#fff";
-    msgDiv.style.background = "rgba(255,255,255,0.15)";
-    msgDiv.style.borderRadius = "14px 14px 0 14px";
-    msgDiv.style.alignSelf = "flex-end";
+  if (isTyping) {
+    msgDiv.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+    msgDiv.id = "ai-typing-indicator";
   } else {
-    msgDiv.style.color = "var(--blue, #4facfe)";
-    msgDiv.style.background = "rgba(30,136,229,0.1)";
-    msgDiv.style.borderRadius = "14px 14px 14px 0";
-    msgDiv.style.alignSelf = "flex-start";
+    msgDiv.textContent = text;
   }
   
   aiMsgs.appendChild(msgDiv);
@@ -74,74 +114,79 @@ function appendMessage(text, sender) {
   return msgDiv;
 }
 
-// Жинхэнэ AI-тай харилцах функц
+// --- AI ЛОГИК (Gemini API + Key Rotation) ---
 async function askGeminiAI(userText) {
-  // 1. Сайтын мэдээллийг динамикаар уншиж авах (app.js болон config.js-ээс)
+  if (validKeys.length === 0) {
+    return "Уучлаарай, админ API түлхүүрээ хараахан тохируулаагүй байна. 🛠️";
+  }
+
+  // Сайтын датаг унших
   const movieCount = window.MOVIES ? window.MOVIES.length : 0;
   const seriesCount = window.SERIES ? window.SERIES.length : 0;
   const gameCount = window.GAMES_LIST ? window.GAMES_LIST.length : 0;
-  
-  // AI-д зориулж хэдэн киноны нэрсийг жишээ болгож өгөх
-  const sampleMovies = window.MOVIES ? window.MOVIES.slice(0, 15).map(m => m.title).join(', ') : 'Мэдээлэл уншиж байна';
+  const sampleMovies = window.MOVIES ? window.MOVIES.slice(0, 10).map(m => m.title).join(', ') : '';
 
-  // 2. AI-д өгөх ХАТУУ ДҮРЭМ (System Prompt)
   const systemPrompt = `
-    Чи бол "Naboo" (Nabooshy) хэмээх Монголын кино, тоглоом, цаг агаарын сайтын ухаалаг туслах AI байна.
+    Чи бол "Nabooshy AI" хэмээх Монголын кино, тоглоомын сайтын ухаалаг туслах.
+    Сайтын мэдээлэл: Нийт ${movieCount} кино, ${seriesCount} цуврал, ${gameCount} тоглоом байна.
+    Зарим кинонууд: ${sampleMovies}.
+    Дүрэм:
+    1. Хэрэглэгчийн асуултад зөвхөн Монгол хэлээр, маш найрсаг, товчхон (1-3 өгүүлбэр) хариулна.
+    2. Хэрвээ кино санал болгохыг хүсвэл дээрх мэдээлэлд тулгуурлан санал болгоно.
+    3. Сайтын код, хакердах, улс төр асуувал "Би зөвхөн кино, тоглоом санал болгох үүрэгтэй" гэж татгалзана.
     
-    Сайтын яг одоогийн бодит мэдээлэл:
-    - Нийт киноны тоо: ${movieCount}
-    - Нийт цувралын тоо: ${seriesCount}
-    - Нийт тоглоомын тоо: ${gameCount}
-    - Манай сайтад байгаа зарим кинонууд: ${sampleMovies}
-
-    Чиний дагах хатуу дүрмүүд:
-    1. Хэрэглэгч "хэдэн кино байна", "heden kino bga we" гэх мэтээр яаж ч асуусан дээрх тоон мэдээлэлд тулгуурлаж хариулна.
-    2. Хэрэглэгч кино санал болгохыг хүсвэл дээрх кинонуудаас эсвэл ерөнхий төрлөөр (Action, Comedy гэх мэт) санал болгоно.
-    3. Хэрвээ хэрэглэгч сайтын код, хэрхэн бүтсэн, хакердах, эсвэл улс төр гэх мэт сайтад хамааралгүй зүйл асуувал: "Уучлаарай, би зөвхөн Naboo сайтын кино, тоглоомын талаар мэдээлэл өгөх үүрэгтэй туслах байна." гэж эелдгээр татгалзана.
-    4. Хариултыг үргэлж Монгол хэлээр, найрсаг, маш товчхон (1-3 өгүүлбэрт багтааж) өгнө.
-    
-    Хэрэглэгчийн асуулт: "${userText}"
+    Хэрэглэгч: "${userText}"
   `;
 
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents:[{ parts: [{ text: systemPrompt }] }]
-      })
-    });
+  // Түлхүүрүүдийг хольж (Shuffle) эхнээс нь шалгах (Нэг нь болохгүй бол нөгөөг нь шалгана)
+  const shuffledKeys = [...validKeys].sort(() => 0.5 - Math.random());
 
-    const data = await response.json();
-    if (data.candidates && data.candidates.length > 0) {
-      return data.candidates[0].content.parts[0].text;
-    } else {
-      return "Уучлаарай, сүлжээний алдаа гарлаа. Та дахин оролдоно уу.";
+  for (let i = 0; i < shuffledKeys.length; i++) {
+    const currentKey = shuffledKeys[i];
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${currentKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts:[{ text: systemPrompt }] }]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      } else {
+        console.warn(`Түлхүүр ${i+1} ажилласангүй, дараагийнхийг шалгаж байна...`);
+        // Хэрвээ 429 (Limit reached) эсвэл алдаа гарвал loop цааш үргэлжилж дараагийн түлхүүрийг шалгана
+      }
+    } catch (error) {
+      console.error("AI холболтын алдаа:", error);
     }
-  } catch (error) {
-    console.error("AI Error:", error);
-    return "Уучлаарай, AI сервертэй холбогдож чадсангүй.";
   }
+
+  return "Уучлаарай, яг одоо хэт олон хүн хандаж байгаа тул систем ачаалалтай байна. Та түр хүлээгээд дахин бичнэ үү. ⏳";
 }
 
-aiInput.addEventListener('keypress', async (e) => {
-  if (e.key === 'Enter' && aiInput.value.trim()) {
-    const userText = aiInput.value.trim();
-    aiInput.value = '';
-    
-    // Хэрэглэгчийн мессеж
-    appendMessage(userText, 'user');
-    
-    // AI бодож байна...
-    const typingIndicator = appendMessage("Бодож байна...", 'ai');
-    typingIndicator.style.opacity = "0.5";
-    typingIndicator.style.fontStyle = "italic";
-    
-    // Жинхэнэ AI-аас хариу авах
-    const aiReply = await askGeminiAI(userText);
-    
-    // Хариуг дэлгэцэнд гаргах
-    typingIndicator.remove();
-    appendMessage(aiReply, 'ai');
-  }
+// Илгээх үйлдэл
+async function handleSend() {
+  const userText = aiInput.value.trim();
+  if (!userText) return;
+  
+  aiInput.value = '';
+  appendMessage(userText, 'user');
+  
+  // Typing animation гаргах
+  const typingIndicator = appendMessage("", 'ai', true);
+  
+  // AI-аас хариу хүлээх
+  const aiReply = await askGeminiAI(userText);
+  
+  // Typing animation-ийг устгаад жинхэнэ хариуг гаргах
+  typingIndicator.remove();
+  appendMessage(aiReply, 'ai');
+}
+
+aiSendBtn.addEventListener('click', handleSend);
+aiInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') handleSend();
 });
