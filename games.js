@@ -36,16 +36,13 @@ function renderGamesGrid(catKey) {
   const grid = document.getElementById('gamesGrid');
   if (!grid) return;
   
-  // Киноны хуудастай яг ижилхэн Grid дизайн ашиглах
   grid.className = 'mgrid'; 
   grid.innerHTML = '';
   
-  // Сонгосон ангиллаар шүүх
   const items = !catKey 
     ? window.GAMES_LIST 
     : window.GAMES_LIST.filter(g => g.cat === catKey);
 
-  // Тоглоомуудыг кино шиг картаар харуулах
   items.forEach(g => {
     grid.appendChild(window.makeGamePosterCard(g));
   });
@@ -53,8 +50,9 @@ function renderGamesGrid(catKey) {
 
 window.openGame = function(g) {
   if (!window.currentUser) { 
-    window.openAuth('login'); 
-    return window.toast('Тоглохын тулд нэвтэрнэ үү 🔐'); 
+    // ЭНД ӨӨРЧЛӨЛТ ОРСОН: login биш register дуудна
+    window.openAuth('register'); 
+    return window.toast('Тоглохын тулд бүртгүүлнэ үү 🔐'); 
   }
   document.getElementById('gmFrame').src = g.embed;
   document.getElementById('gameModal').classList.add('open');
