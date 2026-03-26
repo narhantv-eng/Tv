@@ -1,5 +1,5 @@
 // ============================================================
-// ai-assistant.js — Nabooshy AI v3.0 (Автомат угтлага + Auth)
+// ai-assistant.js — Nabooshy AI v3.1 (Prompt засварласан)
 // ============================================================
 
 const API_KEYS = [
@@ -21,13 +21,10 @@ function newCaptcha() {
 // ── HTML ──────────────────────────────────────────────────────
 const aiHTML = `
 <style>
-/* ===== WRAP ===== */
 #ai-bot-wrap {
   position: fixed; bottom: 28px; left: 28px; z-index: 9999;
   font-family: 'Inter', sans-serif;
 }
-
-/* ===== TOGGLE BTN ===== */
 #ai-toggle-btn {
   width: 58px; height: 58px; border-radius: 50%;
   background: linear-gradient(135deg, #1e88e5, #1043a0);
@@ -45,8 +42,6 @@ const aiHTML = `
   animation: ai-pulse 2s ease-out infinite;
 }
 @keyframes ai-pulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.5);opacity:0} }
-
-/* Notification badge */
 #ai-notif-badge {
   position:absolute; top:-2px; right:-2px;
   width:18px; height:18px; border-radius:50%;
@@ -57,11 +52,8 @@ const aiHTML = `
   animation: ai-badge-pop .4s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes ai-badge-pop { from{transform:scale(0)} to{transform:scale(1)} }
-
-/* ===== CHAT BOX ===== */
 #ai-chat-box {
-  display:none;
-  width:360px;
+  display:none; width:360px;
   background:rgba(10,10,16,.97);
   backdrop-filter:blur(24px);
   border:1px solid rgba(255,255,255,.08);
@@ -75,8 +67,6 @@ const aiHTML = `
   from{opacity:0;transform:scale(.85) translateY(20px)}
   to  {opacity:1;transform:scale(1)   translateY(0)}
 }
-
-/* ===== HEADER ===== */
 .ai-hdr {
   background:linear-gradient(135deg,#1e88e5,#1043a0);
   padding:14px 16px;
@@ -100,8 +90,6 @@ const aiHTML = `
   display:flex; align-items:center; justify-content:center;
 }
 .ai-x:hover { background:rgba(255,255,255,.3); }
-
-/* ===== CHIPS ===== */
 #ai-chips {
   display:flex; gap:6px; flex-wrap:wrap;
   padding:10px 12px 0;
@@ -114,8 +102,6 @@ const aiHTML = `
   transition:all .2s; white-space:nowrap;
 }
 .ai-chip:hover { background:rgba(30,136,229,.28); color:#fff; }
-
-/* ===== MESSAGES ===== */
 #ai-msgs {
   height:280px; overflow-y:auto;
   padding:12px 12px 6px;
@@ -124,11 +110,9 @@ const aiHTML = `
 }
 #ai-msgs::-webkit-scrollbar { width:3px; }
 #ai-msgs::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
-
 .ai-row { display:flex; gap:8px; animation:ai-in .3s ease; }
 @keyframes ai-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 .ai-row.user { flex-direction:row-reverse; }
-
 .ai-ico {
   width:28px; height:28px; border-radius:50%; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
@@ -136,40 +120,33 @@ const aiHTML = `
   align-self:flex-end;
 }
 .ai-row.user .ai-ico { background:#e50914; font-size:11px; font-weight:700; color:#fff; }
-
 .ai-bbl {
   max-width:83%; padding:10px 13px;
-  font-size:13px; line-height:1.55;
+  font-size:13px; line-height:1.6;
   word-wrap:break-word; border-radius:16px;
 }
 .ai-row.bot .ai-bbl {
   background:rgba(30,136,229,.1);
   border:1px solid rgba(30,136,229,.2);
-  color:#e3f2fd;
-  border-radius:4px 16px 16px 16px;
+  color:#e3f2fd; border-radius:4px 16px 16px 16px;
 }
 .ai-row.user .ai-bbl {
   background:#e50914; color:#fff;
   border-radius:16px 4px 16px 16px;
   box-shadow:0 4px 14px rgba(229,9,20,.3);
 }
-
-/* ===== AUTH PANEL (chat доторх) ===== */
 .ai-auth-panel {
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.1);
   border-radius:14px; padding:14px;
   margin-top:8px; display:flex; flex-direction:column; gap:10px;
 }
-.ai-auth-tabs {
-  display:flex; gap:6px; margin-bottom:2px;
-}
+.ai-auth-tabs { display:flex; gap:6px; margin-bottom:2px; }
 .ai-auth-tab {
   flex:1; padding:7px; border-radius:8px;
   font-size:12px; font-weight:600; cursor:pointer;
   border:1px solid rgba(255,255,255,.1);
-  background:transparent; color:rgba(255,255,255,.5);
-  transition:all .2s;
+  background:transparent; color:rgba(255,255,255,.5); transition:all .2s;
 }
 .ai-auth-tab.on { background:#1e88e5; color:#fff; border-color:#1e88e5; }
 .ai-auth-inp {
@@ -177,8 +154,7 @@ const aiHTML = `
   border:1px solid rgba(255,255,255,.12);
   border-radius:8px; padding:10px 12px;
   color:#fff; font-size:13px; outline:none;
-  font-family:'Inter',sans-serif; transition:.2s;
-  box-sizing:border-box;
+  font-family:'Inter',sans-serif; transition:.2s; box-sizing:border-box;
 }
 .ai-auth-inp:focus { border-color:#1e88e5; background:rgba(0,0,0,.4); }
 .ai-auth-inp::placeholder { color:rgba(255,255,255,.3); }
@@ -188,28 +164,19 @@ const aiHTML = `
   border-radius:8px; padding:10px 12px;
   display:flex; flex-direction:column; gap:6px;
 }
-.ai-captcha-label {
-  font-size:11px; color:#ffc107; font-weight:600; letter-spacing:.3px;
-}
-#ai-captcha-q { font-size:16px; color:#fff; font-weight:700; }
+.ai-captcha-label { font-size:11px; color:#ffc107; font-weight:600; }
 .ai-auth-btn {
-  width:100%; padding:11px;
-  background:#e50914; color:#fff;
-  border:none; border-radius:10px;
-  font-size:13px; font-weight:700; cursor:pointer;
-  transition:all .2s; font-family:'Inter',sans-serif;
+  width:100%; padding:11px; background:#e50914; color:#fff;
+  border:none; border-radius:10px; font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif;
 }
 .ai-auth-btn:hover { background:#b20710; transform:scale(1.02); }
 .ai-auth-btn.blue { background:#1e88e5; }
 .ai-auth-btn.blue:hover { background:#1043a0; }
 .ai-auth-hint { font-size:11px; color:rgba(255,255,255,.4); text-align:center; line-height:1.5; }
-
-/* Кино карт */
 .ai-mcard {
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px; padding:9px 11px;
-  margin-top:6px; cursor:pointer;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:10px; padding:9px 11px; margin-top:6px; cursor:pointer;
   transition:all .2s; display:flex; align-items:center; gap:9px;
 }
 .ai-mcard:hover { background:rgba(30,136,229,.15); border-color:#1e88e5; }
@@ -218,18 +185,13 @@ const aiHTML = `
 .ai-mcard-title { font-size:12px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ai-mcard-meta { font-size:11px; color:#90caf9; margin-top:2px; }
 .ai-mcard-play { width:26px; height:26px; border-radius:50%; background:#e50914; color:#fff; display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
-
-/* Typing */
 .ai-typing { display:flex; gap:4px; align-items:center; padding:2px 0; }
 .ai-typing span { width:7px; height:7px; background:#4fc3f7; border-radius:50%; animation:ai-bounce 1.2s infinite ease-in-out both; }
 .ai-typing span:nth-child(1){animation-delay:-.24s}
 .ai-typing span:nth-child(2){animation-delay:-.12s}
 @keyframes ai-bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
-
-/* ===== INPUT ROW ===== */
 .ai-inp-row {
-  padding:9px 11px 13px;
-  background:rgba(0,0,0,.3);
+  padding:9px 11px 13px; background:rgba(0,0,0,.3);
   border-top:1px solid rgba(255,255,255,.05);
   display:flex; gap:7px; align-items:center;
 }
@@ -249,7 +211,6 @@ const aiHTML = `
   transition:.2s; flex-shrink:0; color:#fff;
 }
 #ai-send-btn:hover { background:#1043a0; transform:scale(1.08); }
-
 @media (max-width:480px) {
   #ai-chat-box { width:calc(100vw - 24px); }
   #ai-bot-wrap { bottom:16px; left:10px; }
@@ -258,7 +219,6 @@ const aiHTML = `
 
 <div id="ai-bot-wrap">
   <div id="ai-chat-box">
-    <!-- Header -->
     <div class="ai-hdr">
       <div class="ai-hdr-l">
         <div class="ai-hdr-av">🤖</div>
@@ -272,19 +232,13 @@ const aiHTML = `
       </div>
       <button class="ai-x" id="ai-close-btn">✕</button>
     </div>
-
-    <!-- Quick chips -->
     <div id="ai-chips">
       <span class="ai-chip" onclick="aiQ('Action кино санал болго')">💥 Action</span>
       <span class="ai-chip" onclick="aiQ('Comedy кино байна уу')">😂 Comedy</span>
       <span class="ai-chip" onclick="aiQ('Онлайн тоглоом байна уу')">🎮 Тоглоом</span>
-      <span class="ai-chip" onclick="aiQ('2024 шилдэг кинонууд')">🔥 Шилдэг</span>
+      <span class="ai-chip" onclick="aiQ('Зар байршуулах')">📢 Зар</span>
     </div>
-
-    <!-- Messages -->
     <div id="ai-msgs"></div>
-
-    <!-- Input -->
     <div class="ai-inp-row">
       <input id="ai-input" type="text" placeholder="Асуух, хайх..." autocomplete="off">
       <button id="ai-send-btn">
@@ -294,7 +248,6 @@ const aiHTML = `
       </button>
     </div>
   </div>
-
   <button id="ai-toggle-btn" title="Nabooshy AI">
     🤖
     <div id="ai-notif-badge" style="display:none">1</div>
@@ -304,7 +257,6 @@ const aiHTML = `
 
 document.body.insertAdjacentHTML('beforeend', aiHTML);
 
-// ── DOM ───────────────────────────────────────────────────────
 const aiBox    = document.getElementById('ai-chat-box');
 const aiToggle = document.getElementById('ai-toggle-btn');
 const aiClose  = document.getElementById('ai-close-btn');
@@ -313,13 +265,11 @@ const aiSend   = document.getElementById('ai-send-btn');
 const aiMsgs   = document.getElementById('ai-msgs');
 const aiBadge  = document.getElementById('ai-notif-badge');
 
-// ── Auth state ────────────────────────────────────────────────
-let _authMode  = 'register'; // 'register' | 'login'
-let _authShown = false;      // auth panel нэг л удаа харуулна
+let _authMode  = 'register';
+let _authShown = false;
 
-// ── Toggle ────────────────────────────────────────────────────
 function openChat() {
-  aiBox.style.display  = 'block';
+  aiBox.style.display    = 'block';
   aiToggle.style.display = 'none';
   aiBadge.style.display  = 'none';
   setTimeout(() => aiInput.focus(), 200);
@@ -331,11 +281,9 @@ function closeChat() {
 aiToggle.onclick = openChat;
 aiClose.onclick  = closeChat;
 
-// ── Мессеж нэмэх ─────────────────────────────────────────────
 function addMsg(role, html, isTyping = false) {
   const wrap = document.createElement('div');
   wrap.className = `ai-row ${role}`;
-
   const ico = document.createElement('div');
   ico.className = 'ai-ico';
   if (role === 'bot') {
@@ -344,7 +292,6 @@ function addMsg(role, html, isTyping = false) {
     const u = window.currentUser;
     ico.textContent = u ? u.name[0].toUpperCase() : '👤';
   }
-
   const bbl = document.createElement('div');
   bbl.className = 'ai-bbl';
   if (isTyping) {
@@ -353,82 +300,64 @@ function addMsg(role, html, isTyping = false) {
   } else {
     bbl.innerHTML = html;
   }
-
   wrap.append(ico, bbl);
   aiMsgs.appendChild(wrap);
   aiMsgs.scrollTop = aiMsgs.scrollHeight;
   return wrap;
 }
 
-// ── Кино карт ─────────────────────────────────────────────────
 function mCard(m) {
   const isSeries = !!m.episodes;
+  const safeM = encodeURIComponent(JSON.stringify(m));
   const fn = isSeries
-    ? `window.openSeriesDetail(window.SERIES?.find(s=>s.id==='${m.id}')||JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(m))}')))`
-    : `window.openMovieDetail(window.MOVIES?.find(x=>x.id==='${m.id}')||JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(m))}')))`  ;
+    ? `window.openSeriesDetail(window.SERIES?.find(s=>s.id==='${m.id}')||JSON.parse(decodeURIComponent('${safeM}')))`
+    : `window.openMovieDetail(window.MOVIES?.find(x=>x.id==='${m.id}')||JSON.parse(decodeURIComponent('${safeM}')))`;
   return `
     <div class="ai-mcard" onclick="${fn}">
       <img src="${m.poster||'https://placehold.co/36x52/111/555?text=N'}"
            onerror="this.src='https://placehold.co/36x52/111/555?text=N'">
       <div class="ai-mcard-info">
         <div class="ai-mcard-title">${m.title}</div>
-        <div class="ai-mcard-meta">${[m.year,m.rating?'⭐'+m.rating:'',m.cat?.split(',')[0]].filter(Boolean).join(' · ')}</div>
+        <div class="ai-mcard-meta">${[m.year, m.rating?'⭐'+m.rating:'', m.cat?.split(',')[0]].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="ai-mcard-play">▶</div>
     </div>`;
 }
 
-// ── Auth panel ────────────────────────────────────────────────
 function authPanel(mode = 'register') {
   _authMode = mode;
   newCaptcha();
   return `
     <div class="ai-auth-panel" id="ai-auth-panel">
       <div class="ai-auth-tabs">
-        <button class="ai-auth-tab ${mode==='register'?'on':''}"
-                onclick="aiSwitchAuth('register')">📝 Бүртгүүлэх</button>
-        <button class="ai-auth-tab ${mode==='login'?'on':''}"
-                onclick="aiSwitchAuth('login')">🔐 Нэвтрэх</button>
+        <button class="ai-auth-tab ${mode==='register'?'on':''}" onclick="aiSwitchAuth('register')">📝 Бүртгүүлэх</button>
+        <button class="ai-auth-tab ${mode==='login'?'on':''}"    onclick="aiSwitchAuth('login')">🔐 Нэвтрэх</button>
       </div>
-
-      <input class="ai-auth-inp" id="ai-email" type="email"
-             placeholder="И-мэйл хаяг (жишээ: name@gmail.com)">
-      <input class="ai-auth-inp" id="ai-pass"  type="password"
-             placeholder="${mode==='register'?'Нууц үг (доод тал нь 6 тэмдэгт)':'Нууц үг'}">
-
+      <input class="ai-auth-inp" id="ai-email" type="email"     placeholder="И-мэйл хаяг">
+      <input class="ai-auth-inp" id="ai-pass"  type="password"  placeholder="${mode==='register'?'Нууц үг (доод тал нь 6 тэмдэгт)':'Нууц үг'}">
       <div class="ai-captcha-row">
-        <div class="ai-captcha-label">🛡️ Бот хамгаалалт — тооны бодлогыг бодно уу:</div>
+        <div class="ai-captcha-label">🛡️ Бот хамгаалалт:</div>
         <div id="ai-captcha-q" style="font-size:16px;color:#fff;font-weight:700;"></div>
-        <input class="ai-auth-inp" id="ai-captcha-a" type="number" placeholder="Хариуг энд бич...">
+        <input class="ai-auth-inp" id="ai-captcha-a" type="number" placeholder="Хариуг бич...">
       </div>
-
       <button class="ai-auth-btn ${mode==='login'?'blue':''}" onclick="aiDoAuth()">
         ${mode==='register'?'🚀 Бүртгүүлж эхлэх':'✅ Нэвтрэх'}
       </button>
       <div class="ai-auth-hint">
-        Нууц үг нь хувийн — бодит Gmail байх шаардлагагүй.<br>
-        Зөвхөн и-мэйл формат байвал болно.
+        Бодит Gmail байх шаардлагагүй — дурын и-мэйл формат ажиллана.
       </div>
     </div>`;
 }
 
-// ── Auth switch ───────────────────────────────────────────────
 window.aiSwitchAuth = (mode) => {
   _authMode = mode;
   newCaptcha();
   const panel = document.getElementById('ai-auth-panel');
   if (!panel) return;
-
-  // Tab
   panel.querySelectorAll('.ai-auth-tab').forEach(t => t.classList.remove('on'));
   panel.querySelectorAll('.ai-auth-tab')[mode==='register'?0:1]?.classList.add('on');
-
-  // Pass placeholder
   const passInp = document.getElementById('ai-pass');
-  if (passInp) passInp.placeholder = mode==='register'
-    ? 'Нууц үг (доод тал нь 6 тэмдэгт)' : 'Нууц үг';
-
-  // Button
+  if (passInp) passInp.placeholder = mode==='register' ? 'Нууц үг (доод тал нь 6 тэмдэгт)' : 'Нууц үг';
   const btn = panel.querySelector('.ai-auth-btn');
   if (btn) {
     btn.textContent = mode==='register' ? '🚀 Бүртгүүлж эхлэх' : '✅ Нэвтрэх';
@@ -436,28 +365,22 @@ window.aiSwitchAuth = (mode) => {
   }
 };
 
-// ── Auth logic ────────────────────────────────────────────────
 window.aiDoAuth = async () => {
-  const email   = (document.getElementById('ai-email')?.value   || '').trim();
-  const pass    = (document.getElementById('ai-pass')?.value    || '');
+  const email   = (document.getElementById('ai-email')?.value    || '').trim();
+  const pass    = (document.getElementById('ai-pass')?.value     || '');
   const captcha = parseInt(document.getElementById('ai-captcha-a')?.value || '0');
 
-  if (!email || !email.includes('@')) {
-    return showAuthErr('И-мэйл хаягаа зөв оруулна уу 📧');
-  }
-  if (pass.length < 6) {
-    return showAuthErr('Нууц үг доод тал нь 6 тэмдэгт байна 🔒');
-  }
+  if (!email || !email.includes('@')) return showAuthErr('И-мэйл хаягаа зөв оруулна уу 📧');
+  if (pass.length < 6)               return showAuthErr('Нууц үг доод тал нь 6 тэмдэгт байна 🔒');
   if (isNaN(captcha) || captcha !== _captchaAnswer) {
     newCaptcha();
-    return showAuthErr('Тооны бодлогыг буруу бодлоо, дахиж оролдоно уу 🔢');
+    return showAuthErr('Тооны бодлогыг буруу бодлоо 🔢');
   }
 
   const btn = document.querySelector('#ai-auth-panel .ai-auth-btn');
   if (btn) { btn.textContent = '⏳ Түр хүлээнэ үү...'; btn.disabled = true; }
 
   try {
-    // Firebase auth дуудах
     const { auth } = await import('./firebase-config.js');
     const { signInWithEmailAndPassword, createUserWithEmailAndPassword }
       = await import('https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js');
@@ -472,13 +395,11 @@ window.aiDoAuth = async () => {
   } catch (err) {
     newCaptcha();
     if (btn) { btn.textContent = _authMode==='register'?'🚀 Бүртгүүлж эхлэх':'✅ Нэвтрэх'; btn.disabled = false; }
-    const msg = err.code === 'auth/email-already-in-use'
-      ? 'Энэ и-мэйл бүртгэлтэй байна. Нэвтрэх таб дарна уу 👆'
-      : err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
-      ? 'Нууц үг буруу байна. Дахиж оролдоно уу 🔑'
-      : err.code === 'auth/user-not-found'
-      ? 'Энэ и-мэйл бүртгэлгүй байна. Бүртгүүлэх таб дарна уу 👆'
-      : 'Алдаа гарлаа: ' + (err.message || err.code);
+    const msg =
+      err.code === 'auth/email-already-in-use'  ? 'Энэ и-мэйл бүртгэлтэй байна — Нэвтрэх таб дарна уу 👆' :
+      err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' ? 'Нууц үг буруу байна 🔑' :
+      err.code === 'auth/user-not-found'         ? 'Энэ и-мэйл бүртгэлгүй — Бүртгүүлэх таб дарна уу 👆' :
+      'Алдаа: ' + (err.message || err.code);
     showAuthErr(msg);
   }
 };
@@ -489,89 +410,57 @@ function showAuthErr(msg) {
 }
 
 function onAuthSuccess(type) {
-  // Auth panel-тай мессежийг устгах
   document.getElementById('ai-auth-panel')?.closest('.ai-row')?.remove();
-
+  const name = window.currentUser?.name || '';
   if (type === 'register') {
-    addMsg('bot', `🎉 Амжилттай бүртгүүллээ! Тавтай морил Nabooshy-д! Одоо бүх кино, тоглоомыг чөлөөтэй үзэж тоглоорой 🍿🎮`);
+    addMsg('bot', `🎉 Амжилттай бүртгүүллээ! Тавтай морил <strong>${name}</strong>! Бүх кино, тоглоомыг чөлөөтэй үзэж тоглоорой 🍿🎮`);
   } else {
-    const name = window.currentUser?.name || 'та';
-    addMsg('bot', `👋 Тавтай морил, <strong>${name}</strong>! Дахин харагдлаа — таны дуртай кинонууд хүлээж байна 🎬`);
+    addMsg('bot', `👋 Дахин тавтай морил, <strong>${name}</strong>! Таны дуртай кинонууд хүлээж байна 🎬`);
   }
-
-  // Pending кино байвал нээх
   if (window._pendingMovie) {
-    setTimeout(() => {
-      window.openPlayer?.(window._pendingMovie);
-      window._pendingMovie = null;
-    }, 800);
+    setTimeout(() => { window.openPlayer?.(window._pendingMovie); window._pendingMovie = null; }, 800);
   }
-
-  // Chips дахиад харуулах
   const chips = document.getElementById('ai-chips');
   if (chips) chips.style.display = 'flex';
 }
 
 // ── Автомат угтлага ───────────────────────────────────────────
 function autoWelcome() {
-  // Хэрэглэгч нэвтэрсэн бол угтлага хэрэггүй
   if (window.currentUser) return;
-
-  // Өмнө нь харсан эсэх
   const seen = localStorage.getItem('naboo_ai_welcomed');
 
   setTimeout(() => {
-    // Badge харуулах
     aiBadge.style.display = 'flex';
-
-    // 2.5 секундын дараа автоматаар нээх
     setTimeout(() => {
-      if (aiBox.style.display === 'block') return; // Аль хэдийн нээтэй бол болио
+      if (aiBox.style.display === 'block') return;
       openChat();
-
       if (!seen) {
-        // Шинэ зочин
-        addMsg('bot', `👋 Сайн уу! <strong>Nabooshy</strong>-д тавтай морил!<br><br>🎬 Кино, 📺 цуврал, 🎮 тоглоом бүгд нэг дороо — <strong>үнэ төлбөргүй</strong>!`);
-
+        addMsg('bot', `👋 Сайн уу! <strong>Nabooshy</strong>-д тавтай морил!<br><br>🎬 Кино &nbsp;·&nbsp; 📺 Цуврал &nbsp;·&nbsp; 🎮 Тоглоом — бүгд нэг дороо, <strong>үнэ төлбөргүй!</strong>`);
         setTimeout(() => {
-          addMsg('bot', `Үзэхийн тулд хурдан бүртгүүлэх шаардлагатай. Хамгийн хялбар — дурын и-мэйл хаяг + нууц үгээ өөрөө гаргаад бүртгүүлнэ үү 👇` + authPanel('register'));
-          newCaptcha();
-          _authShown = true;
+          addMsg('bot', `Үзэхийн тулд хурдан бүртгүүлнэ үү 👇` + authPanel('register'));
+          newCaptcha(); _authShown = true;
           localStorage.setItem('naboo_ai_welcomed', '1');
         }, 1200);
-
       } else {
-        // Буцаж ирсэн зочин
         addMsg('bot', `👋 Дахин тавтай морил! Нэвтрэнэ үү 👇` + authPanel('login'));
-        newCaptcha();
-        _authShown = true;
+        newCaptcha(); _authShown = true;
       }
     }, 2500);
-
   }, 1500);
 }
 
-// ── Нэвтэрсний дараа AI-г шинэчлэх ──────────────────────────
-function onUserLoggedIn() {
-  if (_authShown) return; // Auth panel аль хэдийн дуусгасан
-  const name = window.currentUser?.name || '';
-  // Chips харуулах
-  const chips = document.getElementById('ai-chips');
-  if (chips) chips.style.display = 'flex';
-
-  // Угтлага
-  if (name && aiBox.style.display === 'block') {
-    addMsg('bot', `👋 Тавтай морил, <strong>${name}</strong>! Юу хайж байна? 🎬`);
-  }
-}
-
-// Auth state listener
 let _prevUser = null;
 setInterval(() => {
   const cur = window.currentUser;
   if (cur && !_prevUser) {
     _prevUser = cur;
-    onUserLoggedIn();
+    if (!_authShown) {
+      const chips = document.getElementById('ai-chips');
+      if (chips) chips.style.display = 'flex';
+      if (aiBox.style.display === 'block') {
+        addMsg('bot', `👋 Тавтай морил, <strong>${cur.name}</strong>! Юу хайж байна? 🎬`);
+      }
+    }
   }
   _prevUser = cur;
 }, 500);
@@ -580,52 +469,86 @@ setInterval(() => {
 function localSearch(q) {
   const all = [...(window.MOVIES||[]), ...(window.SERIES||[])];
   const byName = all.filter(m =>
-    m.title?.toLowerCase().includes(q) ||
-    m.title_en?.toLowerCase().includes(q)
+    m.title?.toLowerCase().includes(q) || m.title_en?.toLowerCase().includes(q)
   ).slice(0, 4);
   if (byName.length) return byName;
   return all.filter(m => m.cat?.toLowerCase().includes(q)).slice(0, 4);
 }
-
 function localGameSearch(q) {
   return (window.GAMES_LIST||[]).filter(g =>
-    g.title?.toLowerCase().includes(q) ||
-    g.desc?.toLowerCase().includes(q) ||
-    g.cat?.toLowerCase().includes(q)
+    g.title?.toLowerCase().includes(q) || g.desc?.toLowerCase().includes(q) || g.cat?.toLowerCase().includes(q)
   ).slice(0, 3);
 }
 
-// ── Gemini ────────────────────────────────────────────────────
+// ── Сайтын мэдээлэл + prompt ──────────────────────────────────
 function buildCtx() {
   const movies = (window.MOVIES||[]).slice(0, 80);
   const series = (window.SERIES||[]).slice(0, 40);
   const games  =  window.GAMES_LIST||[];
+  const phone  =  window.CONTACT_PHONE || '9937-6238';
+  const year   =  window.CURRENT_YEAR  || 2026;
+
+  const genreMap = {};
+  movies.forEach(m => {
+    (m.cat||'').split(',').forEach(g => {
+      const k = g.trim();
+      if (!genreMap[k]) genreMap[k] = [];
+      if (genreMap[k].length < 6) genreMap[k].push(m.title);
+    });
+  });
+
   return `
-NABOOSHY САЙТ: кино ${movies.length}, цуврал ${series.length}, тоглоом ${games.length}
-КИНОНУУД: ${movies.map(m=>`${m.title}(${m.year},⭐${m.rating},${m.cat})`).join('|')}
-ЦУВРАЛ: ${series.map(s=>`${s.title}(${s.year})`).join('|')}
-ТОГЛООМ: ${games.map(g=>`${g.title}[${g.cat}]`).join('|')}`;
+=== NABOOSHY САЙТЫН МЭДЭЭЛЭЛ ===
+Нэр: Nabooshy — Монголын онлайн кино, цуврал, тоглоомын платформ
+Үүссэн он: ${year} | Зар холбоо барих: ${phone}
+Нийт кино: ${movies.length} | Цуврал: ${series.length} | Тоглоом: ${games.length}
+
+КИНОНУУДЫН БҮРЭН ЖАГСААЛТ (нэр|жил|⭐үнэлгээ|ангилал):
+${movies.map(m=>`${m.title}|${m.year}|${m.rating}|${m.cat}`).join('\n')}
+
+ЦУВРАЛ:
+${series.map(s=>`${s.title}|${s.year}|${s.cat}`).join('\n')}
+
+ТОГЛООМУУД:
+${games.map(g=>`${g.title}[${g.cat}] — ${g.desc}`).join('\n')}
+
+АНГИЛЛААР:
+${Object.entries(genreMap).map(([g,t])=>`${g}: ${t.join(', ')}`).join('\n')}
+
+ZAR HOLBOO: Зар байршуулах, реклам, сурталчилгааны асуудлаар: ${phone}
+===`;
 }
 
+// ── Gemini ────────────────────────────────────────────────────
 async function askGemini(userText) {
-  if (!validKeys.length) return { text: '⚠️ API байхгүй байна.', movies: [] };
+  if (!validKeys.length) return { text: '⚠️ API байхгүй.', movies: [] };
+
   const prompt = `
 ${buildCtx()}
 
-Чи "Nabooshy AI". ДҮРЭМ:
-1. Монгол хэлээр, найрсаг, товч (2-3 өгүүлбэр) хариулна.
-2. Кино санал болгохдоо дээрх жагсаалтаас л авна — зохиохгүй.
-3. Кино нэрийг [[НЭР]] гэж бич. Жишээ: [[Inception]]
-4. Кино/тоглоом бус асуувал "Зөвхөн кино, тоглоом санал болгоно" гэж хэл.
+Чи "Nabooshy AI" — Монголын кино, тоглоомын платформын ухаалаг туслах.
 
-Хэрэглэгч: "${userText}"`;
+ХАТУУ ДҮРМҮҮД:
+1. ЗӨВХӨН Монгол хэлээр хариулна. Товч, найрсаг (2-4 өгүүлбэр).
+2. Кино санал болгохдоо ДЭЭРХ жагсаалтаас л авна. Байхгүй кино зохиохгүй.
+3. Санал болгосон кино нэрийг [[НЭР]] гэж тэмдэглэ. Жишээ: [[Inception]]
+4. Сайтын тухай асуувал (ямар site вэ, юу хийдэг вэ, хэдэн кино байна гэх мэт) → товч, бахархалтайгаар тайлбарлана.
+5. "Зар байршуулах", "реклам", "сурталчилгаа" гэсэн түлхүүр үг байвал → заавал ${window.CONTACT_PHONE||'9937-6238'} дугаарыг дурдана.
+6. "Чи хэн бэ", "ямар AI вэ", "хэн чамайг бүтээсэн" гэвэл → "Би Nabooshy AI. Намайг хиймэл оюун ухааны архитект бүтээсэн бөгөөд Nabooshy платформын зориулалтаар ажилладаг." гэж хариулна.
+7. Сайтын техник бүтэц (код, файл, API түлхүүр) → огт хэлэхгүй, "Тэр мэдээлэл хаалттай" гэж хэл.
+8. Улс төр, гэмт хэрэг, хортой контент → "Зөвхөн кино, тоглоом санал болгоно" гэж татгалзана.
+9. Мэндчилгээ (сайн уу, байна уу) → дулааханаар мэндлэнэ.
+10. Талархал (баярлалаа, гайхалтай) → эелдэгээр хариулна.
+
+Хэрэглэгч: "${userText}"
+`;
 
   for (const key of [...validKeys].sort(()=>Math.random()-.5)) {
     try {
       const r = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
         { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({contents:[{parts:[{text:prompt}]}]}) }
+          body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
       );
       if (!r.ok) continue;
       const d   = await r.json();
@@ -650,12 +573,10 @@ async function handleSend() {
   if (!text) return;
   aiInput.value = '';
 
-  // Нэвтрээгүй бол auth харуулах
   if (!window.currentUser && !_authShown) {
     addMsg('user', text);
     addMsg('bot', `Асуултанд хариулахын тулд эхлээд бүртгүүлнэ үү 👇` + authPanel('register'));
-    newCaptcha();
-    _authShown = true;
+    newCaptcha(); _authShown = true;
     return;
   }
 
@@ -692,20 +613,14 @@ async function handleSend() {
   addMsg('bot', html);
 }
 
-// Quick chip
 window.aiQ = (text) => { aiInput.value = text; handleSend(); };
-
-// Events
 aiSend.addEventListener('click', handleSend);
 aiInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
 
 // ── Эхлүүлэх ─────────────────────────────────────────────────
-// Firebase бэлэн болохыг хүлээх
 const _startWelcome = setInterval(() => {
   if (typeof window.currentUser !== 'undefined') {
     clearInterval(_startWelcome);
-    if (!window.currentUser) {
-      autoWelcome();
-    }
+    if (!window.currentUser) autoWelcome();
   }
 }, 300);
