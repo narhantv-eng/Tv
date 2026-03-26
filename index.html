@@ -6,6 +6,10 @@
 <meta name="theme-color" content="#E50914">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title id="appTitle">Nabooshy - Ухаалаг Платформ</title>
+
+<!-- PWA Manifest (2026 оны шинэчлэл: App болгож суулгах) -->
+<link rel="manifest" href="manifest.json">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -265,7 +269,19 @@
   </div>
 </div>
 
+<!-- Үндсэн хуучин скриптүүд -->
 <script type="module" src="zar.js"></script>
 <script type="module" src="app.js"></script>
+
+<!-- =========================================================
+     2026 ОНЫ ШИНЭЧЛЭЛҮҮД (Шинэ файлууд)
+     ========================================================= -->
+<script type="module" src="spatial-ui.js"></script>
+<script type="module" src="player-advanced.js"></script>
+<script type="module" src="profile-gamify.js"></script>
+<script type="module" src="ai-assistant.js"></script>
+<script type="module" src="watch-party.js"></script>
+<script type="module" src="pwa-init.js"></script>
+
 </body>
 </html>
