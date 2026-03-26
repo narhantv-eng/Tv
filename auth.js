@@ -8,10 +8,16 @@ import './auth-modal.js';
 window.currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
+  const wasLoggedIn = !!window.currentUser;
   window.currentUser = user?.email
     ? { name: user.email.split('@')[0], email: user.email }
     : null;
   window.updateNavUser();
+
+  // Шинээр нэвтэрсэн үед хүлээж байсан кинонийг нээх
+  if (!wasLoggedIn && window.currentUser) {
+    window.onAfterLogin?.();
+  }
 });
 
 window.doLogin = async () => {
@@ -20,12 +26,18 @@ window.doLogin = async () => {
   const captcha = parseInt(document.getElementById('captchaAnswerLogin').value);
   if (!email || !pass) return window.toast('Мэдээллээ бүрэн оруулна уу');
   if (isNaN(captcha) || captcha !== window.currentCaptchaAnswer) {
-    window.generateCaptcha(); return window.toast('❌ Хамгаалалтын тоог буруу бодсон байна!');
+    window.generateCaptcha();
+    return window.toast('❌ Хамгаалалтын тоог буруу бодсон байна!');
   }
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-    window.closeAuth(); window.toast('Амжилттай нэвтэрлээ 👋');
-  } catch { window.generateCaptcha(); window.toast('❌ И-мэйл эсвэл нууц үг буруу байна!'); }
+    window.closeAuth();
+    window.toast('Амжилттай нэвтэрлээ 👋');
+    // onAuthStateChanged автоматаар onAfterLogin дуудна
+  } catch {
+    window.generateCaptcha();
+    window.toast('❌ И-мэйл эсвэл нууц үг буруу байна!');
+  }
 };
 
 window.doRegister = async () => {
@@ -34,15 +46,22 @@ window.doRegister = async () => {
   const captcha = parseInt(document.getElementById('captchaAnswerReg').value);
   if (!email || pass.length < 6) return window.toast('Нууц үг 6-аас дээш тэмдэгт байх ёстой');
   if (isNaN(captcha) || captcha !== window.currentCaptchaAnswer) {
-    window.generateCaptcha(); return window.toast('❌ Хамгаалалтын тоог буруу бодсон байна!');
+    window.generateCaptcha();
+    return window.toast('❌ Хамгаалалтын тоог буруу бодсон байна!');
   }
   try {
     await createUserWithEmailAndPassword(auth, email, pass);
-    window.closeAuth(); window.toast('Амжилттай бүртгүүллээ 🎉');
-  } catch { window.generateCaptcha(); window.toast('❌ Бүртгэл үүсгэхэд алдаа гарлаа'); }
+    window.closeAuth();
+    window.toast('Амжилттай бүртгүүллээ 🎉');
+    // onAuthStateChanged автоматаар onAfterLogin дуудна
+  } catch {
+    window.generateCaptcha();
+    window.toast('❌ Бүртгэл үүсгэхэд алдаа гарлаа');
+  }
 };
 
 window.logoutUser = async () => {
   if (!confirm('Гарах уу?')) return;
-  await signOut(auth); window.toast('Амжилттай гарлаа');
+  await signOut(auth);
+  window.toast('Амжилттай гарлаа');
 };
