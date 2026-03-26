@@ -3,39 +3,39 @@
 // --- 1. HERO ХЭСЭГТ ГАРАХ 5 ТРЕЙЛЕР (Зөвхөн чимэглэл зориулалттай) ---
 window.HERO_GAMES =[
   { 
-    title: 'PUBG Mobile', 
+    title: 'PUBG', 
     cat: 'Shooter',  
     desc: 'Battle Royale - Дэлхийн хамгийн алдартай тоглоом', 
-    trailer: 'GXXEsnG14kw' // Таны өгсөн линкний ID
+    trailer: 'GXXEsnG14kw' 
   },
   { 
     title: 'Dota 2',      
     cat: 'Strategy', 
     desc: 'MOBA - Стратеги болон багийн ажиллагаа', 
-    trailer: '-cSFPIwMEq4' // 2 дахь бичлэг (Та дараа нь сольж болно)
+    trailer: '-cSFPIwMEq4' 
   },
   { 
     title: 'Counter-Strike 2', 
     cat: 'Shooter',  
     desc: 'Тактикийн буудлага', 
-    trailer: 'c80dVYcL69E' // 3 дахь бичлэг
+    trailer: 'c80dVYcL69E' 
   },
   { 
     title: 'Valorant',    
     cat: 'Shooter',  
     desc: '5v5 Буудлага', 
-    trailer: 'e_E9W2vsRbQ' // 4 дэх бичлэг
+    trailer: 'e_E9W2vsRbQ' 
   },
   { 
     title: 'Mobile Legends', 
     cat: 'Strategy', 
     desc: 'Гар утасны MOBA', 
-    trailer: 'W1ZJ1Hj2kQY' // 5 дахь бичлэг
+    trailer: 'W1ZJ1Hj2kQY' 
   }
 ];
 
 // --- 2. ДООД ТАЛЫН ЖАГСААЛТАД ГАРАХ ЖИНХЭНЭ ТОГЛООМУУД ---
-window.GAMES_LIST = [
+window.GAMES_LIST =[
   { title:'Wordle',      cat:'puzzle',   emoji:'🔤', color:['#1a1a2e','#16213e','#0f3460'], desc:'Үг таах тоглоом',        embed:'https://wordleunlimited.org/' },
   { title:'2048',        cat:'puzzle',   emoji:'🔢', color:['#1a0a00','#3d1f00','#f5a623'], desc:'Тоон нийлүүлэлт',        embed:'https://play2048.co/' },
   { title:'Sudoku',      cat:'puzzle',   emoji:'🧩', color:['#0d1b2a','#1b2a3b','#2196f3'], desc:'Судоку тоглоом',          embed:'https://sudoku.com/' },
