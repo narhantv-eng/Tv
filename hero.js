@@ -92,7 +92,7 @@ function startSlide() {
   hInt = setInterval(() => {
     const cont = document.getElementById('heroVideoContainer');
     if (!cont?.hasChildNodes()) window.setHero((hi + 1) % window.HERO_MOVIES.length);
-  }, window.HERO_TIMER || 12000); // <-- Динамик хугацаа
+  }, window.HERO_TIMER || 12000);
 }
 
 // ── Хуудас бүрт hero тохируулах ──────────────────────────────
@@ -195,7 +195,7 @@ window.setPageHero = function(page) {
           gi = (gi + 1) % games.length;
           showGame(gi);
         }
-      }, window.GAME_TIMER || 14000); // <-- Динамик хугацаа
+      }, window.GAME_TIMER || 14000);
     }
 
     showGame(0);
@@ -234,7 +234,6 @@ window.setPageHero = function(page) {
     }
     window.hideVolBtn?.();
 
-    // <-- Динамик хотын нэр
     const cityQuery = window.DEFAULT_CITY || 'Ulaanbaatar';
     
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityQuery}&appid=${window.OW_KEY}&units=metric`)

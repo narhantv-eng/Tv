@@ -35,7 +35,6 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="searchIn" type="text" placeholder="Хайх..." oninput="doSearch(this.value)" onfocus="gotoPage('search')">
     </div>
-    <!-- Гар утсан дээр энэ товч харагдахгүй (CSS-ээр нуусан) -->
     <button class="nav-contact desktop-only" id="navLoginBtn" onclick="openAuth('register')">Нэвтрэх</button>
     <div class="nav-user" id="navUserBtn" style="display:none" onclick="logoutUser()">
       <div class="nav-avatar" id="navAvatar">U</div>
@@ -173,7 +172,7 @@
   </main>
 </div>
 
-<!-- ===================== AUTH MODAL (BOTTOM SHEET) ===================== -->
+<!-- ===================== AUTH MODAL ===================== -->
 <div class="auth-modal-bg" id="authModal" onclick="if(event.target===this)closeAuth()">
   <div class="auth-box">
     <div class="bottom-sheet-handle"></div>
@@ -182,7 +181,6 @@
     <div class="auth-logo"><div class="logo-mark">N</div><div class="logo-name">NABOO<span style="color:var(--red)">SHY</span></div></div>
     <p style="text-align:center; color:var(--text2); font-size:13px; margin-top:-20px; margin-bottom:24px;">Үргэлжлүүлэхийн тулд бүртгүүлнэ үү</p>
     
-    <!-- БҮРТГҮҮЛЭХ ХЭСЭГ (Анхдагч) -->
     <div id="authRegister">
       <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
       <div class="auth-field"><label>Нууц үг</label><input type="password" id="regPass" placeholder="Доод тал нь 6 тэмдэгт"></div>
@@ -194,7 +192,6 @@
       <div class="auth-switch"><span style="color:var(--text2);">Бүртгэлтэй юу?</span> <a onclick="switchAuth('login')">Нэвтрэх</a></div>
     </div>
 
-    <!-- НЭВТРЭХ ХЭСЭГ -->
     <div id="authLogin" style="display:none">
       <div class="auth-field"><label>И-мэйл хаяг</label><input type="email" id="loginEmail" placeholder="email@example.com"></div>
       <div class="auth-field"><label>Нууц үг</label><input type="password" id="loginPass" placeholder="••••••••"></div>

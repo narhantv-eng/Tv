@@ -8,12 +8,12 @@ window.OW_KEY   = '28b8969deb0ae248fe2db2e6064dd511';
 
 // 2. Ерөнхий мэдээллүүд
 window.CONTACT_PHONE = '9937-6238';
-window.CURRENT_YEAR  = new Date().getFullYear(); // Он солигдоход автоматаар дагаж солигдоно
+window.CURRENT_YEAR  = new Date().getFullYear();
 window.DEFAULT_CITY  = 'Ulaanbaatar';
 
 // 3. Хугацааны тохиргоо (Миллисекундээр: 1000 = 1 секунд)
-window.HERO_TIMER = 12000; // Киноны слайд солигдох хугацаа
-window.GAME_TIMER = 14000; // Тоглоомын слайд солигдох хугацаа
+window.HERO_TIMER = 12000; 
+window.GAME_TIMER = 14000; 
 
 // 4. Орлуулах утгууд (Мэдээлэл дутуу үед гарах)
 window.FALLBACK_YEAR   = 2024;
@@ -21,8 +21,8 @@ window.FALLBACK_RATING = 7.0;
 window.FALLBACK_POSTER = 'https://placehold.co/300x450/111/555?text=No+Image';
 
 // 5. Хувьсагчид
-window.MOVIES      = [];
-window.SERIES      =[];
+window.MOVIES      =[];
+window.SERIES      = [];
 window.HERO_MOVIES =[];
 
 // 6. Нүүр хуудасны эгнээнүүд
