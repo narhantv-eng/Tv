@@ -51,24 +51,6 @@ window.buildGamesPage = function() {
     items.forEach(g => {
       rowEl.appendChild(window.makeGamePosterCard(g));
     });
-
-    // --- МӨР ХООРОНД ЗАРЫН БАННЕР ОРУУЛАХ ---
-    // Хамгийн сүүлийн мөрний доор зар гаргахгүй байх нөхцөл (хүсвэл устгаж болно)
-    if (idx < window.GAME_SECTIONS.length - 1) {
-      const adContainer = document.createElement('div');
-      adContainer.className = 'ad-banner-container';
-      adContainer.style.margin = '10px auto 40px'; // Дээд доод зай
-      
-      // Энд та өөрийнхөө зарын зургийн линкийг (src) сольж тавина
-      adContainer.innerHTML = `
-        <a href="#" class="ad-banner">
-          <div class="ad-label">ЗАР СУРТАЛЧИЛГАА</div>
-          <img src="https://placehold.co/1200x150/111/E50914?text=YOUR+AD+BANNER+HERE+(${idx + 1})" alt="Ad Banner">
-        </a>
-      `;
-      container.appendChild(adContainer);
-    }
-  });
 };
 
 window.openGame = function(g) {
