@@ -14,47 +14,43 @@ window.buildGamesRow = function() {
 window.buildGamesPage = function() {
   if (gamesBuilt) return;
   gamesBuilt = true;
-
-  // 1. Хуучин байсан дээд талын товчнуудыг (Genre Bar) нуух/устгах
   const bar = document.getElementById('gameGenreBar');
-  if (bar) bar.style.display = 'none';
+  if (!bar) return;
+  bar.innerHTML = '';
   
-  const container = document.getElementById('gamesGrid');
-  if (!container) return;
-  
-  // 2. Grid биш, мөрүүд (rows) орох тул class-ийг цэвэрлэнэ
-  container.className = ''; 
-  container.innerHTML = '';
-
-  // 3. Ангилал тус бүрээр мөр үүсгэх
-  window.GAME_SECTIONS.forEach((sec, idx) => {
-    const items = window.GAMES_LIST.filter(g => g.cat === sec.key);
-    if (items.length === 0) return;
-
-    // --- МӨР ҮҮСГЭХ (Кино шиг) ---
-    const section = document.createElement('section');
-    section.className = 'sec';
-    section.innerHTML = `
-      <div class="sec-head">
-        <div class="sec-title">${sec.title}</div>
-      </div>
-      <div class="row-wrap">
-        <button class="scroll-btn left" onclick="scrollRow('${sec.id}', -600)">❮</button>
-        <div class="scroll-row" id="${sec.id}"></div>
-        <button class="scroll-btn right" onclick="scrollRow('${sec.id}', 600)">❯</button>
-      </div>
-    `;
-    container.appendChild(section);
-
-    // --- ТОГЛООМУУДЫГ МӨР РҮҮ ХИЙХ ---
-    const rowEl = document.getElementById(sec.id);
-    items.forEach(g => {
-      rowEl.appendChild(window.makeGamePosterCard(g));
-    });
+  window.GAME_CATS.forEach((c, i) => {
+    const pill = document.createElement('button');
+    pill.className = 'gpill' + (i === 0 ? ' on' : '');
+    pill.textContent = c.label;
+    pill.onclick = () => { 
+      bar.querySelectorAll('.gpill').forEach(p => p.classList.remove('on')); 
+      pill.classList.add('on'); 
+      renderGamesGrid(c.key); 
+    };
+    bar.appendChild(pill);
+  });
+  renderGamesGrid('');
 };
+
+function renderGamesGrid(catKey) {
+  const grid = document.getElementById('gamesGrid');
+  if (!grid) return;
+  
+  grid.className = 'mgrid'; 
+  grid.innerHTML = '';
+  
+  const items = !catKey 
+    ? window.GAMES_LIST 
+    : window.GAMES_LIST.filter(g => g.cat === catKey);
+
+  items.forEach(g => {
+    grid.appendChild(window.makeGamePosterCard(g));
+  });
+}
 
 window.openGame = function(g) {
   if (!window.currentUser) { 
+    // ЭНД ӨӨРЧЛӨЛТ ОРСОН: login биш register дуудна
     window.openAuth('register'); 
     return window.toast('Тоглохын тулд бүртгүүлнэ үү 🔐'); 
   }
