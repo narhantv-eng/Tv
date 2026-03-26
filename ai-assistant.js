@@ -3,7 +3,7 @@
 // ============================================================
 
 // 1. ЭНД ӨӨРИЙН GEMINI API ТҮЛХҮҮРЭЭ ХИЙНЭ ҮҮ (aistudio.google.com-с үнэгүй авна)
-const GEMINI_API_KEY = 'AQ.Ab8RN6Ij1M7YgjcHW1-kz7Wy3FkteIZTRZiJY8tppK1NNafS3w'; 
+const GEMINI_API_KEY = 'AIzaSyB5GeZCzpGwrylytrr65RZ1aAyCLo2ti00'; 
 
 const aiHTML = `
 <div id="ai-bot-wrap" style="position:fixed;bottom:30px;left:30px;z-index:9999;font-family:sans-serif;">
