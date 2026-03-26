@@ -1,30 +1,76 @@
 // games-data.js
-window.GAMES_LIST = [
-  { title:'Wordle',      cat:'puzzle',   emoji:'🔤', color:['#1a1a2e','#16213e','#0f3460'], desc:'Үг таах тоглоом',        embed:'https://wordleunlimited.org/',           trailer:'dQw4w9WgXcQ' },
-  { title:'2048',        cat:'puzzle',   emoji:'🔢', color:['#1a0a00','#3d1f00','#f5a623'], desc:'Тоон нийлүүлэлт',        embed:'https://play2048.co/',                   trailer:'AZtczHnPETA' },
-  { title:'Sudoku',      cat:'puzzle',   emoji:'🧩', color:['#0d1b2a','#1b2a3b','#2196f3'], desc:'Судоку тоглоом',          embed:'https://sudoku.com/',                    trailer:'3ypZVCaADp4' },
-  { title:'Chess',       cat:'strategy', emoji:'♟️', color:['#1a0a0a','#2d1515','#c9a84c'], desc:'Шатар тоглоом',          embed:'https://www.chess.com/play/computer',    trailer:'z-ttu7dyBCU' },
-  { title:'Minesweeper', cat:'strategy', emoji:'💣', color:['#0a1a0a','#1a3a1a','#4caf50'], desc:'Минэ эрэх тоглоом',      embed:'https://minesweeper.online/',            trailer:'KKEBZMzIJUs' },
-  { title:'Solitaire',   cat:'strategy', emoji:'🃏', color:['#0a0a1a','#1a1a3a','#9c27b0'], desc:'Картын тоглоом',         embed:'https://www.solitaire.org/',             trailer:'cVKLIXqFiSw' },
-  { title:'Snake',       cat:'arcade',   emoji:'🐍', color:['#001a00','#003300','#00c853'], desc:'Могойн тоглоом',         embed:'https://playsnake.org/',                 trailer:'oJAAiOjL3O8' },
-  { title:'Pac-Man',     cat:'arcade',   emoji:'👻', color:['#1a1500','#332b00','#ffd600'], desc:'Пак-ман классик',        embed:'https://freepacman.org/',                trailer:'uEBPCeXITqw' },
-  { title:'Tetris',      cat:'arcade',   emoji:'🎮', color:['#00001a','#000033','#3f51b5'], desc:'Тетрис тоглоом',         embed:'https://tetris.com/play-tetris',         trailer:'BQwohJMJK_o' },
-  { title:'Flappy Bird', cat:'arcade',   emoji:'🐦', color:['#0a1a2a','#0d3349','#29b6f6'], desc:'Нисэх шувуу',            embed:'https://flappybird.io/',                 trailer:'fQoQa1W5mKA' },
-  { title:'Tic-Tac-Toe', cat:'multi',    emoji:'✖️', color:['#1a001a','#2d002d','#e91e63'], desc:'Икс Оо',                 embed:'https://playtictactoe.org/',             trailer:'T-UE-8JZUQU' },
-  { title:'Skribbl.io',  cat:'multi',    emoji:'🎨', color:['#001a1a','#003333','#00bcd4'], desc:'Зурж таах',              embed:'https://skribbl.io/',                    trailer:'1iEJMi8-mAk' },
-  { title:'Agar.io',     cat:'multi',    emoji:'🟢', color:['#001a05','#003310','#00e676'], desc:'Хүн идэх тоглоом',       embed:'https://agar.io/',                       trailer:'s7e6DmGDO5k' },
-  { title:'Slither.io',  cat:'multi',    emoji:'🐛', color:['#0a0a00','#1a1a00','#cddc39'], desc:'Олон тоглогчийн могой',  embed:'https://slither.io/',                    trailer:'k4R7JzmUKOs' },
-  { title:'Crossword',   cat:'puzzle',   emoji:'📝', color:['#1a1a1a','#2d2d2d','#e0e0e0'], desc:'Үгийн сүлжээ',          embed:'https://crosswordlabs.com/',             trailer:'dQw4w9WgXcQ' },
-  { title:'Checkers',    cat:'strategy', emoji:'🔴', color:['#1a0505','#330a0a','#e53935'], desc:'Даам тоглоом',          embed:'https://www.gameflare.com/online-game/checkers/', trailer:'GRFhCy4dIAA' },
+window.GAMES_LIST =[
+  // --- 1. HERO ХЭСЭГТ ГАРАХ ТОГЛООМУУД (Trailer-тай) ---
+  { 
+    title: 'PUBG Mobile', 
+    cat: 'shooter',  
+    emoji: '🪂', 
+    color:['#ff9900','#cc7a00','#995c00'], 
+    desc: 'Battle Royale', 
+    embed: 'https://www.youtube.com/embed/ucdcqhXQZzQ?autoplay=1', 
+    trailer: 'ucdcqhXQZzQ' 
+  },
+  { 
+    title: 'Dota 2',      
+    cat: 'strategy', 
+    emoji: '🧙‍♂️', 
+    color:['#8b0000','#5c0000','#2e0000'], 
+    desc: 'MOBA Тоглоом', 
+    embed: 'https://www.youtube.com/embed/-cSFPIwMEq4?autoplay=1', 
+    trailer: '-cSFPIwMEq4' 
+  },
+  { 
+    title: 'Counter-Strike 2', 
+    cat: 'shooter',  
+    emoji: '🔫', 
+    color:['#ffcc00','#cc9900','#996600'], 
+    desc: 'Тактикийн буудлага', 
+    embed: 'https://www.youtube.com/embed/c80dVYcL69E?autoplay=1', 
+    trailer: 'c80dVYcL69E' 
+  },
+  { 
+    title: 'Valorant',    
+    cat: 'shooter',  
+    emoji: '🎯', 
+    color: ['#ff4655','#cc3844','#992a33'], 
+    desc: '5v5 Буудлага', 
+    embed: 'https://www.youtube.com/embed/e_E9W2vsRbQ?autoplay=1', 
+    trailer: 'e_E9W2vsRbQ' 
+  },
+  { 
+    title: 'Mobile Legends', 
+    cat: 'strategy', 
+    emoji: '⚔️', 
+    color: ['#00008b','#00005c','#00002e'], 
+    desc: 'Гар утасны MOBA', 
+    embed: 'https://www.youtube.com/embed/W1ZJ1Hj2kQY?autoplay=1', 
+    trailer: 'W1ZJ1Hj2kQY' 
+  },
+
+  // --- 2. ВЭБ ДЭЭР ШУУД ТОГЛОХ ТОГЛООМУУД (Trailer-гүй тул Hero-д гарахгүй) ---
+  { title:'Wordle',      cat:'puzzle',   emoji:'🔤', color:['#1a1a2e','#16213e','#0f3460'], desc:'Үг таах тоглоом',        embed:'https://wordleunlimited.org/' },
+  { title:'2048',        cat:'puzzle',   emoji:'🔢', color:['#1a0a00','#3d1f00','#f5a623'], desc:'Тоон нийлүүлэлт',        embed:'https://play2048.co/' },
+  { title:'Sudoku',      cat:'puzzle',   emoji:'🧩', color:['#0d1b2a','#1b2a3b','#2196f3'], desc:'Судоку тоглоом',          embed:'https://sudoku.com/' },
+  { title:'Chess',       cat:'strategy', emoji:'♟️', color:['#1a0a0a','#2d1515','#c9a84c'], desc:'Шатар тоглоом',          embed:'https://www.chess.com/play/computer' },
+  { title:'Minesweeper', cat:'strategy', emoji:'💣', color:['#0a1a0a','#1a3a1a','#4caf50'], desc:'Минэ эрэх тоглоом',      embed:'https://minesweeper.online/' },
+  { title:'Solitaire',   cat:'strategy', emoji:'🃏', color:['#0a0a1a','#1a1a3a','#9c27b0'], desc:'Картын тоглоом',         embed:'https://www.solitaire.org/' },
+  { title:'Snake',       cat:'arcade',   emoji:'🐍', color:['#001a00','#003300','#00c853'], desc:'Могойн тоглоом',         embed:'https://playsnake.org/' },
+  { title:'Pac-Man',     cat:'arcade',   emoji:'👻', color:['#1a1500','#332b00','#ffd600'], desc:'Пак-ман классик',        embed:'https://freepacman.org/' },
+  { title:'Tetris',      cat:'arcade',   emoji:'🎮', color:['#00001a','#000033','#3f51b5'], desc:'Тетрис тоглоом',         embed:'https://tetris.com/play-tetris' },
+  { title:'Flappy Bird', cat:'arcade',   emoji:'🐦', color:['#0a1a2a','#0d3349','#29b6f6'], desc:'Нисэх шувуу',            embed:'https://flappybird.io/' },
+  { title:'Tic-Tac-Toe', cat:'multi',    emoji:'✖️', color:['#1a001a','#2d002d','#e91e63'], desc:'Икс Оо',                 embed:'https://playtictactoe.org/' },
+  { title:'Skribbl.io',  cat:'multi',    emoji:'🎨', color:['#001a1a','#003333','#00bcd4'], desc:'Зурж таах',              embed:'https://skribbl.io/' },
+  { title:'Agar.io',     cat:'multi',    emoji:'🟢', color:['#001a05','#003310','#00e676'], desc:'Хүн идэх тоглоом',       embed:'https://agar.io/' },
+  { title:'Slither.io',  cat:'multi',    emoji:'🐛', color:['#0a0a00','#1a1a00','#cddc39'], desc:'Олон тоглогчийн могой',  embed:'https://slither.io/' },
+  { title:'Crossword',   cat:'puzzle',   emoji:'📝', color:['#1a1a1a','#2d2d2d','#e0e0e0'], desc:'Үгийн сүлжээ',          embed:'https://crosswordlabs.com/' },
+  { title:'Checkers',    cat:'strategy', emoji:'🔴', color:['#1a0505','#330a0a','#e53935'], desc:'Даам тоглоом',          embed:'https://www.gameflare.com/online-game/checkers/' },
 ];
 
-window.GAME_CATS = [
+window.GAME_CATS =[
   { label:'🌐 Бүгд',        key:'' },
-  { label:'🧩 Оюун ухаан',  key:'puzzle' },
-  { label:'♟️ Стратеги',    key:'strategy' },
-  { label:'🕹️ Аркад',      key:'arcade' },
-  { label:'🏎️ Уралдаан',    key:'racing' },
-  { label:'⚽ Спорт',       key:'sport' },
   { label:'🎯 Буудлага',    key:'shooter' },
+  { label:'♟️ Стратеги',    key:'strategy' },
+  { label:'🧩 Оюун ухаан',  key:'puzzle' },
+  { label:'🕹️ Аркад',      key:'arcade' },
   { label:'👥 Олон тоглогч',key:'multi' },
 ];
