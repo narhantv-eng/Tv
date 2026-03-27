@@ -1,21 +1,41 @@
 // ============================================================
-// ai-assistant.js — Nabooshy AI v3.2 (Gemini 2.5 Flash & Error Log)
+// ai-assistant.js — Nabooshy AI v4.0 (Groq Multi-Key Rotation)
+// ============================================================
+// ЗААВАР: Доорх GROQ_KEYS массивт өөрийн key-үүдийг нэмнэ үү
+// Key авах: console.groq.com → API Keys → Create API Key
+// Нэг key = өдөрт ~14,400 хүсэлт (free tier)
 // ============================================================
 
-const API_KEYS =[
-  'AIzaSyCD4uxgrRQGeDFryHGxaKOsT8h8ilYrPB0',
-  'AIzaSyDVDO0plXykZt_aFsommlc4_Dzdhqyi_mg',
-  'AIzaSyCUXy3kg6S6PwB3ZknM3OgE7U0q_JNFr0g',
-  'AIzaSyCb9IEwdPmFNGGSJ3fIpXe9S-gGBWbvosQ',
-  'AIzaSyC3EBiC-KTPxnVL9G_mFdXIUD4CCBnHctc',
-  'AIzaSyD-1j16j_AhGIKlyAGIQPXyLubeTszhCLU',
-  'AIzaSyBug2TvjeSJEWLtTQqGo0keJNXSslu9BcA',
-  'AIzaSyBvLMa8bUjItAeFHU3rV5IJ6mK2b7X1sl8',
-  'AIzaSyAPOFp7EU_j6ZLBTxMxMGjxH9F0m3cPlmQ',
+const GROQ_KEYS = [
+  'ЭНЭД_1_ДУГААР_KEY',   // console.groq.com-с авна
+  'ЭНЭД_2_ДУГААР_KEY',   // Илүү олон key = илүү найдвартай
+  'ЭНЭД_3_ДУГААР_KEY',   // Нэг key дуусахад дараагийнх руу шилжинэ
 ];
-const validKeys = API_KEYS.filter(k => k && k.trim().startsWith('AIza'));
 
-// ── Captcha ──────────────────────────────────────────────────
+// ── Key rotation систем ───────────────────────────────────────
+let _keyIndex = 0;
+let _keyCooldowns = {}; // Quota дууссан key-үүдийг хадгалах
+
+function getNextKey() {
+  const now = Date.now();
+  // Cooldown дууссан key-үүдийг сэргээх (1 минутын дараа)
+  Object.keys(_keyCooldowns).forEach(k => {
+    if (now - _keyCooldowns[k] > 60000) delete _keyCooldowns[k];
+  });
+  // Ажиллаж байгаа key олох
+  const available = GROQ_KEYS.filter(k => k && !k.includes('ЭНЭД') && !_keyCooldowns[k]);
+  if (!available.length) return null;
+  // Round-robin: дараалан эргүүлэх
+  _keyIndex = (_keyIndex + 1) % available.length;
+  return available[_keyIndex];
+}
+
+function markKeyCooling(key) {
+  _keyCooldowns[key] = Date.now();
+  console.warn('Key cooling (quota):', key.slice(-8));
+}
+
+// ── Captcha ───────────────────────────────────────────────────
 let _captchaAnswer = 0;
 function newCaptcha() {
   const a = Math.floor(Math.random() * 9) + 1;
@@ -25,28 +45,28 @@ function newCaptcha() {
   if (el) el.textContent = `${a} + ${b} = ?`;
 }
 
-// ── HTML ──────────────────────────────────────────────────────
+// ── HTML + CSS ────────────────────────────────────────────────
 const aiHTML = `
 <style>
 #ai-bot-wrap {
-  position: fixed; bottom: 28px; left: 28px; z-index: 9999;
-  font-family: 'Inter', sans-serif;
+  position:fixed; bottom:28px; left:28px; z-index:9999;
+  font-family:'Inter',sans-serif;
 }
 #ai-toggle-btn {
-  width: 58px; height: 58px; border-radius: 50%;
-  background: linear-gradient(135deg, #1e88e5, #1043a0);
-  border: none; cursor: pointer;
-  box-shadow: 0 6px 24px rgba(30,136,229,0.55);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
-  position: relative;
+  width:58px; height:58px; border-radius:50%;
+  background:linear-gradient(135deg,#1e88e5,#1043a0);
+  border:none; cursor:pointer;
+  box-shadow:0 6px 24px rgba(30,136,229,0.55);
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;
+  position:relative;
 }
-#ai-toggle-btn:hover { transform: scale(1.12) translateY(-4px); box-shadow: 0 12px 32px rgba(30,136,229,.7); }
+#ai-toggle-btn:hover { transform:scale(1.12) translateY(-4px); box-shadow:0 12px 32px rgba(30,136,229,.7); }
 #ai-toggle-btn::after {
   content:''; position:absolute; inset:-4px; border-radius:50%;
   border:2px solid rgba(30,136,229,.4);
-  animation: ai-pulse 2s ease-out infinite;
+  animation:ai-pulse 2s ease-out infinite;
 }
 @keyframes ai-pulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.5);opacity:0} }
 #ai-notif-badge {
@@ -56,7 +76,7 @@ const aiHTML = `
   font-size:10px; font-weight:700;
   display:flex; align-items:center; justify-content:center;
   border:2px solid #050505;
-  animation: ai-badge-pop .4s cubic-bezier(.34,1.56,.64,1);
+  animation:ai-badge-pop .4s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes ai-badge-pop { from{transform:scale(0)} to{transform:scale(1)} }
 #ai-chat-box {
@@ -65,14 +85,14 @@ const aiHTML = `
   backdrop-filter:blur(24px);
   border:1px solid rgba(255,255,255,.08);
   border-radius:22px; overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.9), 0 0 0 1px rgba(30,136,229,.15);
+  box-shadow:0 20px 60px rgba(0,0,0,.9),0 0 0 1px rgba(30,136,229,.15);
   margin-bottom:14px;
-  animation: ai-slide-up .35s cubic-bezier(.34,1.56,.64,1);
-  transform-origin: bottom left;
+  animation:ai-slide-up .35s cubic-bezier(.34,1.56,.64,1);
+  transform-origin:bottom left;
 }
 @keyframes ai-slide-up {
   from{opacity:0;transform:scale(.85) translateY(20px)}
-  to  {opacity:1;transform:scale(1)   translateY(0)}
+  to{opacity:1;transform:scale(1) translateY(0)}
 }
 .ai-hdr {
   background:linear-gradient(135deg,#1e88e5,#1043a0);
@@ -255,7 +275,8 @@ const aiHTML = `
       <input id="ai-input" type="text" placeholder="Асуух, хайх..." autocomplete="off">
       <button id="ai-send-btn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
     </div>
@@ -264,9 +285,9 @@ const aiHTML = `
     🤖
     <div id="ai-notif-badge" style="display:none">1</div>
   </button>
-</div>
-`;
+</div>`;
 
+// ── DOM холбох ────────────────────────────────────────────────
 document.body.insertAdjacentHTML('beforeend', aiHTML);
 
 const aiBox    = document.getElementById('ai-chat-box');
@@ -280,6 +301,7 @@ const aiBadge  = document.getElementById('ai-notif-badge');
 let _authMode  = 'register';
 let _authShown = false;
 
+// ── Chat нээх/хаах ────────────────────────────────────────────
 function openChat() {
   aiBox.style.display    = 'block';
   aiToggle.style.display = 'none';
@@ -293,17 +315,13 @@ function closeChat() {
 aiToggle.onclick = openChat;
 aiClose.onclick  = closeChat;
 
+// ── Мессеж нэмэх ─────────────────────────────────────────────
 function addMsg(role, html, isTyping = false) {
   const wrap = document.createElement('div');
   wrap.className = `ai-row ${role}`;
   const ico = document.createElement('div');
   ico.className = 'ai-ico';
-  if (role === 'bot') {
-    ico.textContent = '🤖';
-  } else {
-    const u = window.currentUser;
-    ico.textContent = u ? u.name[0].toUpperCase() : '👤';
-  }
+  ico.textContent = role === 'bot' ? '🤖' : (window.currentUser?.name?.[0]?.toUpperCase() || '👤');
   const bbl = document.createElement('div');
   bbl.className = 'ai-bbl';
   if (isTyping) {
@@ -318,6 +336,7 @@ function addMsg(role, html, isTyping = false) {
   return wrap;
 }
 
+// ── Кино карт ─────────────────────────────────────────────────
 function mCard(m) {
   const isSeries = !!m.episodes;
   const safeM = encodeURIComponent(JSON.stringify(m));
@@ -330,12 +349,13 @@ function mCard(m) {
            onerror="this.src='https://placehold.co/36x52/111/555?text=N'">
       <div class="ai-mcard-info">
         <div class="ai-mcard-title">${m.title}</div>
-        <div class="ai-mcard-meta">${[m.year, m.rating?'⭐'+m.rating:'', m.cat?.split(',')[0]].filter(Boolean).join(' · ')}</div>
+        <div class="ai-mcard-meta">${[m.year,m.rating?'⭐'+m.rating:'',m.cat?.split(',')[0]].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="ai-mcard-play">▶</div>
     </div>`;
 }
 
+// ── Auth panel ────────────────────────────────────────────────
 function authPanel(mode = 'register') {
   _authMode = mode;
   newCaptcha();
@@ -343,10 +363,10 @@ function authPanel(mode = 'register') {
     <div class="ai-auth-panel" id="ai-auth-panel">
       <div class="ai-auth-tabs">
         <button class="ai-auth-tab ${mode==='register'?'on':''}" onclick="aiSwitchAuth('register')">📝 Бүртгүүлэх</button>
-        <button class="ai-auth-tab ${mode==='login'?'on':''}"    onclick="aiSwitchAuth('login')">🔐 Нэвтрэх</button>
+        <button class="ai-auth-tab ${mode==='login'?'on':''}" onclick="aiSwitchAuth('login')">🔐 Нэвтрэх</button>
       </div>
-      <input class="ai-auth-inp" id="ai-email" type="email"     placeholder="И-мэйл хаяг">
-      <input class="ai-auth-inp" id="ai-pass"  type="password"  placeholder="${mode==='register'?'Нууц үг (доод тал нь 6 тэмдэгт)':'Нууц үг'}">
+      <input class="ai-auth-inp" id="ai-email" type="email" placeholder="И-мэйл хаяг">
+      <input class="ai-auth-inp" id="ai-pass" type="password" placeholder="${mode==='register'?'Нууц үг (доод тал нь 6 тэмдэгт)':'Нууц үг'}">
       <div class="ai-captcha-row">
         <div class="ai-captcha-label">🛡️ Бот хамгаалалт:</div>
         <div id="ai-captcha-q" style="font-size:16px;color:#fff;font-weight:700;"></div>
@@ -355,9 +375,7 @@ function authPanel(mode = 'register') {
       <button class="ai-auth-btn ${mode==='login'?'blue':''}" onclick="aiDoAuth()">
         ${mode==='register'?'🚀 Бүртгүүлж эхлэх':'✅ Нэвтрэх'}
       </button>
-      <div class="ai-auth-hint">
-        Бодит Gmail байх шаардлагагүй — дурын и-мэйл формат ажиллана.
-      </div>
+      <div class="ai-auth-hint">Бодит Gmail байх шаардлагагүй — дурын и-мэйл формат ажиллана.</div>
     </div>`;
 }
 
@@ -369,34 +387,27 @@ window.aiSwitchAuth = (mode) => {
   panel.querySelectorAll('.ai-auth-tab').forEach(t => t.classList.remove('on'));
   panel.querySelectorAll('.ai-auth-tab')[mode==='register'?0:1]?.classList.add('on');
   const passInp = document.getElementById('ai-pass');
-  if (passInp) passInp.placeholder = mode==='register' ? 'Нууц үг (доод тал нь 6 тэмдэгт)' : 'Нууц үг';
+  if (passInp) passInp.placeholder = mode==='register'?'Нууц үг (доод тал нь 6 тэмдэгт)':'Нууц үг';
   const btn = panel.querySelector('.ai-auth-btn');
   if (btn) {
-    btn.textContent = mode==='register' ? '🚀 Бүртгүүлж эхлэх' : '✅ Нэвтрэх';
-    btn.className   = `ai-auth-btn ${mode==='login'?'blue':''}`;
+    btn.textContent = mode==='register'?'🚀 Бүртгүүлж эхлэх':'✅ Нэвтрэх';
+    btn.className = `ai-auth-btn ${mode==='login'?'blue':''}`;
   }
 };
 
 window.aiDoAuth = async () => {
-  const email   = (document.getElementById('ai-email')?.value    || '').trim();
-  const pass    = (document.getElementById('ai-pass')?.value     || '');
+  const email   = (document.getElementById('ai-email')?.value || '').trim();
+  const pass    = document.getElementById('ai-pass')?.value || '';
   const captcha = parseInt(document.getElementById('ai-captcha-a')?.value || '0');
-
   if (!email || !email.includes('@')) return showAuthErr('И-мэйл хаягаа зөв оруулна уу 📧');
   if (pass.length < 6)               return showAuthErr('Нууц үг доод тал нь 6 тэмдэгт байна 🔒');
-  if (isNaN(captcha) || captcha !== _captchaAnswer) {
-    newCaptcha();
-    return showAuthErr('Тооны бодлогыг буруу бодлоо 🔢');
-  }
-
+  if (isNaN(captcha) || captcha !== _captchaAnswer) { newCaptcha(); return showAuthErr('Тооны бодлогыг буруу бодлоо 🔢'); }
   const btn = document.querySelector('#ai-auth-panel .ai-auth-btn');
   if (btn) { btn.textContent = '⏳ Түр хүлээнэ үү...'; btn.disabled = true; }
-
   try {
     const { auth } = await import('./firebase-config.js');
-    const { signInWithEmailAndPassword, createUserWithEmailAndPassword }
-      = await import('https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js');
-
+    const { signInWithEmailAndPassword, createUserWithEmailAndPassword } =
+      await import('https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js');
     if (_authMode === 'register') {
       await createUserWithEmailAndPassword(auth, email, pass);
       onAuthSuccess('register');
@@ -408,27 +419,22 @@ window.aiDoAuth = async () => {
     newCaptcha();
     if (btn) { btn.textContent = _authMode==='register'?'🚀 Бүртгүүлж эхлэх':'✅ Нэвтрэх'; btn.disabled = false; }
     const msg =
-      err.code === 'auth/email-already-in-use'  ? 'Энэ и-мэйл бүртгэлтэй байна — Нэвтрэх таб дарна уу 👆' :
+      err.code === 'auth/email-already-in-use' ? 'Энэ и-мэйл бүртгэлтэй байна — Нэвтрэх таб дарна уу 👆' :
       err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' ? 'Нууц үг буруу байна 🔑' :
-      err.code === 'auth/user-not-found'         ? 'Энэ и-мэйл бүртгэлгүй — Бүртгүүлэх таб дарна уу 👆' :
+      err.code === 'auth/user-not-found' ? 'Энэ и-мэйл бүртгэлгүй — Бүртгүүлэх таб дарна уу 👆' :
       'Алдаа: ' + (err.message || err.code);
     showAuthErr(msg);
   }
 };
 
-function showAuthErr(msg) {
-  newCaptcha();
-  addMsg('bot', `⚠️ ${msg}`);
-}
+function showAuthErr(msg) { newCaptcha(); addMsg('bot', `⚠️ ${msg}`); }
 
 function onAuthSuccess(type) {
   document.getElementById('ai-auth-panel')?.closest('.ai-row')?.remove();
   const name = window.currentUser?.name || '';
-  if (type === 'register') {
-    addMsg('bot', `🎉 Амжилттай бүртгүүллээ! Тавтай морил <strong>${name}</strong>! Бүх кино, тоглоомыг чөлөөтэй үзэж тоглоорой 🍿🎮`);
-  } else {
-    addMsg('bot', `👋 Дахин тавтай морил, <strong>${name}</strong>! Таны дуртай кинонууд хүлээж байна 🎬`);
-  }
+  addMsg('bot', type === 'register'
+    ? `🎉 Амжилттай бүртгүүллээ! Тавтай морил <strong>${name}</strong>! 🍿🎮`
+    : `👋 Дахин тавтай морил, <strong>${name}</strong>! 🎬`);
   if (window._pendingMovie) {
     setTimeout(() => { window.openPlayer?.(window._pendingMovie); window._pendingMovie = null; }, 800);
   }
@@ -440,7 +446,6 @@ function onAuthSuccess(type) {
 function autoWelcome() {
   if (window.currentUser) return;
   const seen = localStorage.getItem('naboo_ai_welcomed');
-
   setTimeout(() => {
     aiBadge.style.display = 'flex';
     setTimeout(() => {
@@ -467,11 +472,8 @@ setInterval(() => {
   if (cur && !_prevUser) {
     _prevUser = cur;
     if (!_authShown) {
-      const chips = document.getElementById('ai-chips');
-      if (chips) chips.style.display = 'flex';
-      if (aiBox.style.display === 'block') {
-        addMsg('bot', `👋 Тавтай морил, <strong>${cur.name}</strong>! Юу хайж байна? 🎬`);
-      }
+      document.getElementById('ai-chips')?.style && (document.getElementById('ai-chips').style.display = 'flex');
+      if (aiBox.style.display === 'block') addMsg('bot', `👋 Тавтай морил, <strong>${cur.name}</strong>! Юу хайж байна? 🎬`);
     }
   }
   _prevUser = cur;
@@ -480,143 +482,113 @@ setInterval(() => {
 // ── Локал хайлт ───────────────────────────────────────────────
 function localSearch(q) {
   const all = [...(window.MOVIES||[]), ...(window.SERIES||[])];
-  const byName = all.filter(m =>
-    m.title?.toLowerCase().includes(q) || m.title_en?.toLowerCase().includes(q)
-  ).slice(0, 4);
-  if (byName.length) return byName;
-  return all.filter(m => m.cat?.toLowerCase().includes(q)).slice(0, 4);
+  const byName = all.filter(m => m.title?.toLowerCase().includes(q) || m.title_en?.toLowerCase().includes(q)).slice(0,4);
+  return byName.length ? byName : all.filter(m => m.cat?.toLowerCase().includes(q)).slice(0,4);
 }
 function localGameSearch(q) {
   return (window.GAMES_LIST||[]).filter(g =>
     g.title?.toLowerCase().includes(q) || g.desc?.toLowerCase().includes(q) || g.cat?.toLowerCase().includes(q)
-  ).slice(0, 3);
+  ).slice(0,3);
 }
 
-// ── GPS цаг агаар авах ────────────────────────────────────────
+// ── GPS цаг агаар ─────────────────────────────────────────────
 async function fetchWeatherByGPS() {
   return new Promise((resolve) => {
     if (!navigator.geolocation) { resolve(null); return; }
     navigator.geolocation.getCurrentPosition(async (pos) => {
       try {
         const { latitude: lat, longitude: lon } = pos.coords;
-        const owKey = window.OW_KEY || '28b8969deb0ae248fe2db2e6064dd511';
-        const r = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${owKey}&units=metric&lang=mn`
-        );
+        const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${window.OW_KEY||'28b8969deb0ae248fe2db2e6064dd511'}&units=metric&lang=mn`);
         if (!r.ok) { resolve(null); return; }
         const d = await r.json();
-        const temp   = Math.round(d.main.temp);
-        const feels  = Math.round(d.main.feels_like);
-        const desc   = d.weather[0].description;
-        const city   = d.name;
-        const humid  = d.main.humidity;
-        const wind   = (d.wind.speed * 3.6).toFixed(0);
-        const icon   = window.wIcon ? window.wIcon(d.weather[0].id) : '🌤️';
-        resolve({ temp, feels, desc, city, humid, wind, icon, lat, lon });
-      } catch(e) { resolve(null); }
+        resolve({
+          temp: Math.round(d.main.temp), feels: Math.round(d.main.feels_like),
+          desc: d.weather[0].description, city: d.name,
+          humid: d.main.humidity, wind: (d.wind.speed*3.6).toFixed(0),
+          icon: window.wIcon?.(d.weather[0].id) || '🌤️'
+        });
+      } catch { resolve(null); }
     }, () => resolve(null), { timeout: 5000 });
   });
 }
 
-// ── Цаг агаарын keyword шалгах ───────────────────────────────
-function isWeatherQuery(text) {
-  return /цаг агаар|weather|температур|temp|халуун|хүйтэн|хур тунадас|бороо|цас|салхи|чийгшил|өнөөдөр ямар байна|гадаа ямар/i.test(text);
+function isWeatherQuery(t) {
+  return /цаг агаар|weather|температур|temp|халуун|хүйтэн|бороо|цас|салхи|чийгшил|өнөөдөр ямар|гадаа ямар/i.test(t);
 }
 
-// ── Сайтын мэдээлэл + prompt ──────────────────────────────────
+// ── System prompt ─────────────────────────────────────────────
 function buildCtx(weatherInfo) {
-  const movies = (window.MOVIES||[]).slice(0, 80);
-  const series = (window.SERIES||[]).slice(0, 40);
-  const games  =  window.GAMES_LIST||[];
-  const phone  =  window.CONTACT_PHONE || '9937-6238';
-  const year   =  window.CURRENT_YEAR  || 2026;
-
+  const movies = (window.MOVIES||[]).slice(0,80);
+  const series = (window.SERIES||[]).slice(0,40);
+  const games  = window.GAMES_LIST||[];
+  const phone  = window.CONTACT_PHONE||'9937-6238';
   const genreMap = {};
-  movies.forEach(m => {
-    (m.cat||'').split(',').forEach(g => {
-      const k = g.trim();
-      if (!genreMap[k]) genreMap[k] = [];
-      if (genreMap[k].length < 6) genreMap[k].push(m.title);
-    });
-  });
-
-  const weatherCtx = weatherInfo
-    ? `\nХЭРЭГЛЭГЧИЙН БАЙРШЛЫН ЦАГ АГААР (одоогийн бодит мэдээлэл):\nХот: ${weatherInfo.city} | Температур: ${weatherInfo.temp > 0 ? '+' : ''}${weatherInfo.temp}°C | Мэдрэгдэх: ${weatherInfo.feels > 0 ? '+' : ''}${weatherInfo.feels}°C\nТайлбар: ${weatherInfo.desc} | Чийгшил: ${weatherInfo.humid}% | Салхи: ${weatherInfo.wind} км/ц\n`
+  movies.forEach(m => (m.cat||'').split(',').forEach(g => {
+    const k = g.trim(); if (!genreMap[k]) genreMap[k]=[];
+    if (genreMap[k].length<6) genreMap[k].push(m.title);
+  }));
+  const wCtx = weatherInfo
+    ? `\nЦАГ АГААР: ${weatherInfo.city} | ${weatherInfo.temp>0?'+':''}${weatherInfo.temp}°C | ${weatherInfo.desc} | Чийг: ${weatherInfo.humid}% | Салхи: ${weatherInfo.wind}км/ц\n`
     : '';
-
-  return `
-=== NABOOSHY САЙТЫН МЭДЭЭЛЭЛ ===
-Нэр: Nabooshy — Монголын онлайн кино, цуврал, тоглоомын платформ
-Үүссэн он: ${year} | Зар холбоо барих: ${phone}
-Нийт кино: ${movies.length} | Цуврал: ${series.length} | Тоглоом: ${games.length}
-
-САЙТЫН ХУУДАСНУУД:
-🎬 КИНО — Бүх кино, цувралыг үнэгүй үзэх боломжтой. Ангиллаар шүүж болно.
-🎮 ТОГЛООМ — Онлайн тоглоомууд: Chess, Tetris, Snake, Wordle, Sudoku г.м.
-🌤️ ЦАГ АГААР — Монголын 21 хот, аймгийн цаг агаарын мэдээлэл.
-🔍 ХАЙХ — Кино, цуврал, тоглоомыг нэрээр эсвэл ангиллаар хайх.
-${weatherCtx}
-КИНОНУУДЫН БҮРЭН ЖАГСААЛТ (нэр|жил|⭐үнэлгээ|ангилал):
+  return `=== NABOOSHY ===
+Монголын онлайн кино/тоглоомын платформ | Зар: ${phone} | Кино:${movies.length} | Цуврал:${series.length} | Тоглоом:${games.length}
+${wCtx}
+КИНО (нэр|жил|үнэлгээ|ангилал):
 ${movies.map(m=>`${m.title}|${m.year}|${m.rating}|${m.cat}`).join('\n')}
-
 ЦУВРАЛ:
 ${series.map(s=>`${s.title}|${s.year}|${s.cat}`).join('\n')}
-
-ТОГЛООМУУД:
-${games.map(g=>`${g.title}[${g.cat}] — ${g.desc}`).join('\n')}
-
-АНГИЛЛААР:
-${Object.entries(genreMap).map(([g,t])=>`${g}: ${t.join(', ')}`).join('\n')}
-
-ZAR HOLBOO: Зар байршуулах, реклам, сурталчилгааны асуудлаар: ${phone}
+ТОГЛООМ:
+${games.map(g=>`${g.title}[${g.cat}]`).join(' · ')}
+АНГИЛАЛ: ${Object.entries(genreMap).map(([g,t])=>`${g}:${t.join(',')}`).join(' | ')}
 ===`;
 }
 
-// ── Gemini ────────────────────────────────────────────────────
-async function askGemini(userText, weatherInfo) {
-  if (!validKeys.length) return { text: '⚠️ API байхгүй.', movies:[] };
+// ── Groq дуудах (Multi-key rotation) ─────────────────────────
+async function askGroq(userText, weatherInfo) {
+  const available = GROQ_KEYS.filter(k => k && !k.includes('ЭНЭД') && !_keyCooldowns[k]);
+  if (!available.length) {
+    return { text: '⏳ Бүх API key түр хэтэрсэн байна. 1 минутын дараа дахин оролдоно уу.', movies: [] };
+  }
 
-  const prompt = `
-${buildCtx(weatherInfo)}
+  const systemPrompt = `${buildCtx(weatherInfo)}
 
-Чи "Nabooshy AI" — Монголын кино, тоглоомын платформын ухаалаг туслах.
+Чи "Nabooshy AI". ДҮРЭМ:
+1. Зөвхөн Монгол хэлээр. Товч (2-4 өгүүлбэр).
+2. Кино санал → дээрх жагсаалтаас. [[НЭР]] гэж тэмдэглэ.
+3. Зар/реклам → ${window.CONTACT_PHONE||'9937-6238'}.
+4. "Чи хэн бэ" → "Би Nabooshy AI. Намайг Nabooshy архитектур бүтээсэн."
+5. Код/API/техник мэдээлэл → огт хэлэхгүй.
+6. Цаг агаар → бодит мэдээллийг ашиглана.`;
 
-ХАТУУ ДҮРМҮҮД:
-1. ЗӨВХӨН Монгол хэлээр хариулна. Товч, найрсаг (2-4 өгүүлбэр).
-2. Кино санал болгохдоо ДЭЭРХ жагсаалтаас л авна. Байхгүй кино зохиохгүй.
-3. Санал болгосон кино нэрийг [[НЭР]] гэж тэмдэглэ. Жишээ: [[Inception]]
-4. Сайтын тухай асуувал (ямар site вэ, юу хийдэг вэ, хэдэн кино байна гэх мэт) → товч, бахархалтайгаар тайлбарлана.
-5. "Зар байршуулах", "реклам", "сурталчилгаа" гэсэн түлхүүр үг байвал → заавал ${window.CONTACT_PHONE||'9937-6238'} дугаарыг дурдана.
-6. "Чи хэн бэ", "ямар AI вэ", "хэн чамайг бүтээсэн" гэвэл → "Би Nabooshy AI. Намайг болон бүх юм болгоныг Nabooshy архитектур бүтээсэн. Энэ сайт бүх юмыг бүтээсэн бөгөөд цаашдаа ч бүтээж байгаа." гэж хариулна.
-7. Сайтын техник бүтэц (код, файл, API түлхүүр) → огт хэлэхгүй, "Тэр мэдээлэл хаалттай" гэж хэл.
-8. Улс төр, гэмт хэрэг, хортой контент → "Зөвхөн кино, тоглоом санал болгоно" гэж татгалзана.
-9. Мэндчилгээ (сайн уу, байна уу) → дулааханаар мэндлэнэ.
-10. Талархал (баярлалаа, гайхалтай) → эелдэгээр хариулна.
-11. Цаг агаарын асуулт гарвал → ДЭЭРХ бодит мэдээллийг ашиглан хариулна. Байршил мэдэгдэхгүй бол "Байршлын зөвшөөрөл өгнө үү" гэж хэл.
-12. Nabooshy сайтын хуудаснуудын тухай асуувал → САЙТЫН ХУУДАСНУУД хэсгийн мэдээллийг ашиглан тайлбарлана.
-
-Хэрэглэгч: "${userText}"
-`;
-
-  for (const key of [...validKeys].sort(()=>Math.random()-.5)) {
+  // Бүх боломжтой key-үүдийг дараалан туршина
+  for (const key of available) {
     try {
-      // Хамгийн тогтвортой ажиллах загвар: gemini-2.5-flash
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
-        { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
-      );
-      
-      if (!r.ok) {
-        // АЛДААГ CONSOLE ДЭЭР ХАРУУЛАХ (Дибаг хийхэд маш чухал)
-        const errData = await r.json().catch(() => ({}));
-        console.error(`❌ API Key (${key.slice(0,8)}...) алдаа заалаа! Status: ${r.status}`, errData);
-        continue; 
-      }
-      
-      const d   = await r.json();
-      const raw = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const mentioned =[];
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 500,
+          temperature: 0.7,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userText }
+          ]
+        })
+      });
+
+      // 429 = quota дууссан → энэ key-г cooling хийж дараагийнх руу
+      if (res.status === 429) { markKeyCooling(key); continue; }
+      // 401 = key буруу → алгас
+      if (res.status === 401) { console.error('Буруу key:', key.slice(-8)); continue; }
+      // Бусад алдаа → алгас
+      if (!res.ok) { console.error(`Groq [${res.status}]`); continue; }
+
+      const data = await res.json();
+      const raw  = data.choices?.[0]?.message?.content || '';
+      if (!raw) continue;
+
+      const mentioned = [];
       const cleaned = raw.replace(/\[\[([^\]]+)\]\]/g, (_, name) => {
         const found = [...(window.MOVIES||[]),...(window.SERIES||[])].find(m =>
           m.title?.toLowerCase().includes(name.toLowerCase())
@@ -624,9 +596,75 @@ ${buildCtx(weatherInfo)}
         if (found) mentioned.push(found);
         return `<strong style="color:#90caf9">${name}</strong>`;
       });
+
       return { text: cleaned, movies: mentioned };
-    } catch(e) { 
-      console.error("🌐 Сүлжээний алдаа гарлаа:", e); 
+
+    } catch (e) {
+      console.error('Groq fetch алдаа:', e);
+      continue;
     }
   }
-  return { text: 'Уучлаарай, AI системтэй холбогдоход алдаа гарлаа. (F12 дарж Console-оос шалтгааныг харна уу) ⏳', movies:
+
+  return { text: '⚠️ AI түр ажиллахгүй байна. Дахин оролдоно уу.', movies: [] };
+}
+
+// ── Илгээх ────────────────────────────────────────────────────
+async function handleSend() {
+  const text = aiInput.value.trim();
+  if (!text) return;
+  aiInput.value = '';
+
+  if (!window.currentUser && !_authShown) {
+    addMsg('user', text);
+    addMsg('bot', `Асуултанд хариулахын тулд эхлээд бүртгүүлнэ үү 👇` + authPanel('register'));
+    newCaptcha(); _authShown = true;
+    return;
+  }
+
+  const chips = document.getElementById('ai-chips');
+  if (chips) chips.style.display = 'none';
+
+  addMsg('user', text);
+  const typing = addMsg('bot', '', true);
+
+  const q           = text.toLowerCase();
+  const localMovies = localSearch(q);
+  const localGames  = localGameSearch(q);
+
+  let weatherInfo = null;
+  if (isWeatherQuery(text)) weatherInfo = await fetchWeatherByGPS();
+
+  const { text: aiText, movies } = await askGroq(text, weatherInfo);
+  typing.remove();
+
+  const showMovies = movies.length ? movies : localMovies.slice(0,3);
+  let html = aiText;
+  if (showMovies.length) html += showMovies.map(mCard).join('');
+
+  if (localGames.length && /тоглоом|game|chess|tetris|snake|wordle|sudoku/i.test(text)) {
+    html += `<div style="margin-top:8px;font-size:11px;color:#90caf9;margin-bottom:4px;">🎮 Тоглоомууд:</div>`;
+    html += localGames.map(g => `
+      <div class="ai-mcard" onclick="window.openGame&&window.openGame(window.GAMES_LIST?.find(x=>x.title==='${g.title}')||${JSON.stringify(g)})">
+        <div style="font-size:24px;width:36px;text-align:center">${g.emoji}</div>
+        <div class="ai-mcard-info">
+          <div class="ai-mcard-title">${g.title}</div>
+          <div class="ai-mcard-meta">${g.desc}</div>
+        </div>
+        <div class="ai-mcard-play">▶</div>
+      </div>`).join('');
+  }
+
+  addMsg('bot', html);
+}
+
+window.aiQ = (text) => { aiInput.value = text; handleSend(); };
+aiSend.addEventListener('click', handleSend);
+aiInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+
+// ── Эхлүүлэх ─────────────────────────────────────────────────
+const _startWelcome = setInterval(() => {
+  if (typeof window.currentUser !== 'undefined') {
+    clearInterval(_startWelcome);
+    if (!window.currentUser) autoWelcome();
+  }
+}, 300);
