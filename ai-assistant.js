@@ -4,7 +4,14 @@
 
 const API_KEYS = [
   'AIzaSyCD4uxgrRQGeDFryHGxaKOsT8h8ilYrPB0',
-  '', '', '', '', '', '', '', '', ''
+  'AIzaSyDVDO0plXykZt_aFsommlc4_Dzdhqyi_mg',
+  'AIzaSyCUXy3kg6S6PwB3ZknM3OgE7U0q_JNFr0g',
+  'AIzaSyCb9IEwdPmFNGGSJ3fIpXe9S-gGBWbvosQ',
+  'AIzaSyC3EBiC-KTPxnVL9G_mFdXIUD4CCBnHctc',
+  'AIzaSyD-1j16j_AhGIKlyAGIQPXyLubeTszhCLU',
+  'AIzaSyBug2TvjeSJEWLtTQqGo0keJNXSslu9BcA',
+  'AIzaSyBvLMa8bUjItAeFHU3rV5IJ6mK2b7X1sl8',
+  'AIzaSyAPOFp7EU_j6ZLBTxMxMGjxH9F0m3cPlmQ',
 ];
 const validKeys = API_KEYS.filter(k => k && k.trim().startsWith('AIza'));
 
