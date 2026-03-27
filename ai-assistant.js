@@ -7,7 +7,7 @@
 // ============================================================
 
 const GROQ_KEYS = [
-  'ЭНЭД_1_ДУГААР_KEY',   // console.groq.com-с авна
+  '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',   // console.groq.com-с авна
   'ЭНЭД_2_ДУГААР_KEY',   // Илүү олон key = илүү найдвартай
   'ЭНЭД_3_ДУГААР_KEY',   // Нэг key дуусахад дараагийнх руу шилжинэ
 ];
