@@ -1,8 +1,8 @@
 // ============================================================
-// ai-assistant.js — Nabooshy AI v3.1 (Prompt засварласан)
+// ai-assistant.js — Nabooshy AI v3.2 (Gemini 2.5 Flash & Error Log)
 // ============================================================
 
-const API_KEYS = [
+const API_KEYS =[
   'AIzaSyCD4uxgrRQGeDFryHGxaKOsT8h8ilYrPB0',
   'AIzaSyDVDO0plXykZt_aFsommlc4_Dzdhqyi_mg',
   'AIzaSyCUXy3kg6S6PwB3ZknM3OgE7U0q_JNFr0g',
@@ -574,7 +574,7 @@ ZAR HOLBOO: Зар байршуулах, реклам, сурталчилгаа�
 
 // ── Gemini ────────────────────────────────────────────────────
 async function askGemini(userText, weatherInfo) {
-  if (!validKeys.length) return { text: '⚠️ API байхгүй.', movies: [] };
+  if (!validKeys.length) return { text: '⚠️ API байхгүй.', movies:[] };
 
   const prompt = `
 ${buildCtx(weatherInfo)}
@@ -600,15 +600,23 @@ ${buildCtx(weatherInfo)}
 
   for (const key of [...validKeys].sort(()=>Math.random()-.5)) {
     try {
+      // Хамгийн тогтвортой ажиллах загвар: gemini-2.5-flash
       const r = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
         { method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
       );
-      if (!r.ok) continue;
+      
+      if (!r.ok) {
+        // АЛДААГ CONSOLE ДЭЭР ХАРУУЛАХ (Дибаг хийхэд маш чухал)
+        const errData = await r.json().catch(() => ({}));
+        console.error(`❌ API Key (${key.slice(0,8)}...) алдаа заалаа! Status: ${r.status}`, errData);
+        continue; 
+      }
+      
       const d   = await r.json();
       const raw = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const mentioned = [];
+      const mentioned =[];
       const cleaned = raw.replace(/\[\[([^\]]+)\]\]/g, (_, name) => {
         const found = [...(window.MOVIES||[]),...(window.SERIES||[])].find(m =>
           m.title?.toLowerCase().includes(name.toLowerCase())
@@ -617,72 +625,8 @@ ${buildCtx(weatherInfo)}
         return `<strong style="color:#90caf9">${name}</strong>`;
       });
       return { text: cleaned, movies: mentioned };
-    } catch(e) { console.warn(e); }
+    } catch(e) { 
+      console.error("🌐 Сүлжээний алдаа гарлаа:", e); 
+    }
   }
-  return { text: 'Одоо ачаалалтай байна. Түр хүлээгээд дахиж оролдоно уу ⏳', movies: [] };
-}
-
-// ── Илгээх ────────────────────────────────────────────────────
-async function handleSend() {
-  const text = aiInput.value.trim();
-  if (!text) return;
-  aiInput.value = '';
-
-  if (!window.currentUser && !_authShown) {
-    addMsg('user', text);
-    addMsg('bot', `Асуултанд хариулахын тулд эхлээд бүртгүүлнэ үү 👇` + authPanel('register'));
-    newCaptcha(); _authShown = true;
-    return;
-  }
-
-  const chips = document.getElementById('ai-chips');
-  if (chips) chips.style.display = 'none';
-
-  addMsg('user', text);
-  const typing = addMsg('bot', '', true);
-
-  const q           = text.toLowerCase();
-  const localMovies = localSearch(q);
-  const localGames  = localGameSearch(q);
-
-  // Цаг агаарын асуулт бол GPS авна
-  let weatherInfo = null;
-  if (isWeatherQuery(text)) {
-    weatherInfo = await fetchWeatherByGPS();
-  }
-
-  const { text: aiText, movies } = await askGemini(text, weatherInfo);
-
-  typing.remove();
-
-  const showMovies = movies.length ? movies : localMovies.slice(0, 3);
-  let html = aiText;
-  if (showMovies.length) html += showMovies.map(mCard).join('');
-
-  if (localGames.length && /тоглоом|game|chess|tetris|snake|wordle|sudoku|puzzle|arcade/i.test(text)) {
-    html += `<div style="margin-top:8px;font-size:11px;color:#90caf9;margin-bottom:4px;">🎮 Тоглоомууд:</div>`;
-    html += localGames.map(g => `
-      <div class="ai-mcard" onclick="window.openGame&&window.openGame(window.GAMES_LIST?.find(x=>x.title==='${g.title}')||${JSON.stringify(g)})">
-        <div style="font-size:24px;width:36px;text-align:center">${g.emoji}</div>
-        <div class="ai-mcard-info">
-          <div class="ai-mcard-title">${g.title}</div>
-          <div class="ai-mcard-meta">${g.desc}</div>
-        </div>
-        <div class="ai-mcard-play">▶</div>
-      </div>`).join('');
-  }
-
-  addMsg('bot', html);
-}
-
-window.aiQ = (text) => { aiInput.value = text; handleSend(); };
-aiSend.addEventListener('click', handleSend);
-aiInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
-
-// ── Эхлүүлэх ─────────────────────────────────────────────────
-const _startWelcome = setInterval(() => {
-  if (typeof window.currentUser !== 'undefined') {
-    clearInterval(_startWelcome);
-    if (!window.currentUser) autoWelcome();
-  }
-}, 300);
+  return { text: 'Уучлаарай, AI системтэй холбогдоход алдаа гарлаа. (F12 дарж Console-оос шалтгааныг харна уу) ⏳', movies:
