@@ -1,1 +1,22 @@
-
+[
+  {
+    "title": "Project Hail Mary",
+    "mongolian_title": "Аврах ажиллагаа",
+    "type": "movie",
+    "year": 2026,
+    "genre": ["Sci-Fi", "Adventure", "Action"],
+    "ratings": { "imdb": "8.9" },
+    "poster_link": "https://image.tmdb.org/t/p/w500/7WsyChvRStv9OidunSj9Jp7uYvQ.jpg",
+    "embed_links": ["https://www.youtube.com/embed/sYp5p2ol51g"]
+  },
+  {
+    "title": "The Dark Knight",
+    "mongolian_title": "Харанхуйн хүлэг баатар",
+    "type": "movie",
+    "year": 2008,
+    "genre": ["Action", "Crime", "Drama"],
+    "ratings": { "imdb": "9.0" },
+    "poster_link": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDp9sSUNGvdyuTvl2vC.jpg",
+    "embed_links": ["https://vidsrc.to/embed/movie/155"]
+  }
+]
