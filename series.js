@@ -1,7 +1,4 @@
-// ============================================================
-// series.js — Цуврал дэлгэрэнгүй, цуврал хуудас
-// ============================================================
-
+// series.js - БҮРЭН ЭХЭЭРЭЭ
 export const SERIES_GENRES = [
   { label: '🌐 Бүгд',       keys: [] },
   { label: '🎭 Драма',       keys: ['drama', 'romance'] },
@@ -12,13 +9,20 @@ export const SERIES_GENRES = [
 ];
 
 window.openSeriesDetail = function (s) {
-  document.getElementById('smHero').style.backgroundImage = `url('${s.poster}')`;
-  document.getElementById('smTitle').textContent = s.title;
-  document.getElementById('smMeta').innerHTML =
-    `<span class="st">★</span>${s.rating} &nbsp;·&nbsp; ${s.year}`;
-  document.getElementById('smDesc').textContent = '';
+  const hero = document.getElementById('smHero');
+  if (hero) hero.style.backgroundImage = `url('${s.poster}')`;
+  
+  const title = document.getElementById('smTitle');
+  if (title) title.textContent = s.title;
+  
+  const meta = document.getElementById('smMeta');
+  if (meta) meta.innerHTML = `<span class="st">★</span>${s.rating} &nbsp;·&nbsp; ${s.year}`;
+  
+  const desc = document.getElementById('smDesc');
+  if (desc) desc.textContent = s.desc || '';
 
   const epGrid = document.getElementById('smEpGrid');
+  if (!epGrid) return;
   epGrid.innerHTML = '';
 
   (s.episodes || []).forEach((ep, i) => {
@@ -27,19 +31,29 @@ window.openSeriesDetail = function (s) {
     el.innerHTML = `
       <div class="ep-num">${i + 1}</div>
       <div class="ep-label">${ep.episode_title || 'Анги'}</div>`;
-    el.onclick = () =>
-      window.openPlayer({
-        title: `${s.title} — ${i + 1}-р анги`,
-        embed: ep.embed_links?.[0] || '',
-        poster: s.poster,
-      });
+    
+    // АНГИ ДЭЭР ДАРАХАД:
+    el.onclick = () => {
+      // 1. Цувралын цонхыг хаах
+      window.closeM('seriesModal'); 
+      
+      // 2. Тоглуулагчийг нээх
+      setTimeout(() => {
+        window.openPlayer({
+          title: `${s.title} — ${i + 1}-р анги`,
+          embed: ep.embed_links?.[0] || '',
+          poster: s.poster,
+        });
+      }, 300);
+    };
+    
     epGrid.appendChild(el);
   });
 
   document.getElementById('seriesModal').classList.add('open');
 };
 
-// ── Цуврал хуудас ─────────────────────────────────────────────
+// --- Цуврал хуудас бүтээх ---
 let seriesBuilt = false;
 
 export function buildSeriesPage() {
