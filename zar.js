@@ -2,7 +2,7 @@
 import './zar-config.js'; // window.MY_ADS-г ачаална
 import { ZAR_CSS } from './zar-styles.js'; // CSS загварыг импортолно
 
-const _ZAR_MAX = 10;
+const _ZAR_MAX = 100;
 
 // CSS загварыг хуудасны <head> хэсэгт нэмэх функц
 function _zarInjectCSS() {
