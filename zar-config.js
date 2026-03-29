@@ -1,11 +1,20 @@
 // zar-config.js
 window.MY_ADS =[
-  { afterRowId: 'rowFeatured',   isActive: true,  label: 'BANNER 1' },
-  { afterRowId: 'rowSeries',     isActive: true,  label: 'BANNER 2' },
-  { afterRowId: 'rowAction',     isActive: true,  label: 'BANNER 3' },
-  { afterRowId: 'rowDrama',      isActive: false, label: 'BANNER 4' },
-  { afterRowId: 'rowComedy',     isActive: false, label: 'BANNER 5' },
-  { afterRowId: 'gameRow_puzzle',   isActive: true, label: 'GAME AD 1' },
-  { afterRowId: 'gameRow_strategy', isActive: true, label: 'GAME AD 2' },
-  { afterRowId: 'gameRow_arcade',   isActive: true, label: 'GAME AD 3' }
+  { afterRowId: 'rowAction',      isActive: true,  label: 'BANNER 1' },
+  { afterRowId: 'rowAdventure',   isActive: true,  label: 'BANNER 2' },
+  { afterRowId: 'rowComedy',      isActive: true,  label: 'BANNER 3' },
+  { afterRowId: 'rowDrama',       isActive: true,  label: 'BANNER 4' },
+  { afterRowId: 'rowHorror',      isActive: true,  label: 'BANNER 5' },
+  { afterRowId: 'rowThriller',    isActive: true,  label: 'BANNER 6' },
+  { afterRowId: 'rowSciFi',       isActive: true,  label: 'BANNER 7' },
+  { afterRowId: 'rowFantasy',     isActive: true,  label: 'BANNER 8' },
+  { afterRowId: 'rowAnimation',   isActive: true,  label: 'BANNER 9' },
+  { afterRowId: 'rowCrime',       isActive: true,  label: 'BANNER 10' },
+  { afterRowId: 'rowRomance',     isActive: true,  label: 'BANNER 11' },
+  { afterRowId: 'rowMystery',     isActive: true,  label: 'BANNER 12' },
+  { afterRowId: 'rowDocumentary', isActive: true,  label: 'BANNER 13' },
+  { afterRowId: 'rowFamily',      isActive: true,  label: 'BANNER 14' },
+  { afterRowId: 'rowHistory',     isActive: true,  label: 'BANNER 15' },
+  { afterRowId: 'rowWar',         isActive: true,  label: 'BANNER 16' },
+  { afterRowId: 'rowBiography',   isActive: true,  label: 'BANNER 17' },
 ];
