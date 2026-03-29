@@ -1,22 +1,181 @@
-[
-  {
-    "title": "Project Hail Mary",
-    "mongolian_title": "Аврах ажиллагаа",
-    "type": "movie",
-    "year": 2026,
-    "genre": ["Sci-Fi", "Adventure", "Action"],
-    "ratings": { "imdb": "8.9" },
-    "poster_link": "https://image.tmdb.org/t/p/w500/7WsyChvRStv9OidunSj9Jp7uYvQ.jpg",
-    "embed_links": ["https://www.youtube.com/embed/sYp5p2ol51g"]
-  },
-  {
-    "title": "The Dark Knight",
-    "mongolian_title": "Харанхуйн хүлэг баатар",
-    "type": "movie",
-    "year": 2008,
-    "genre": ["Action", "Crime", "Drama"],
-    "ratings": { "imdb": "9.0" },
-    "poster_link": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDp9sSUNGvdyuTvl2vC.jpg",
-    "embed_links": ["https://vidsrc.to/embed/movie/155"]
-  }
-]
+{
+  "data": [
+    {
+      "title": "John Wick: Chapter 4",
+      "mongolian_title": "Жон Уик 4",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["action"],
+      "ratings": { "imdb": "7.7" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/vZloYm7pS7lsUsDbtSfezg6Af6b.jpg",
+      "embed_links": ["https://www.youtube.com/embed/qEVUrkHu32E"]
+    },
+    {
+      "title": "Dune: Part Two",
+      "mongolian_title": "Дюна: 2-р бүлэг",
+      "type": "movie",
+      "year": 2024,
+      "genre": ["adventure"],
+      "ratings": { "imdb": "8.6" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/6Y9SdfX1CqX79q9o69vWy9vX1C.jpg",
+      "embed_links": ["https://www.youtube.com/embed/Way9Dexny3w"]
+    },
+    {
+      "title": "Barbie",
+      "mongolian_title": "Барби",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["comedy"],
+      "ratings": { "imdb": "6.9" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/iuFNm91YvRcrvGv1ne99M9pS0wM.jpg",
+      "embed_links": ["https://www.youtube.com/embed/pBk4NYhWNMM"]
+    },
+    {
+      "title": "The Last of Us",
+      "mongolian_title": "Бидний сүүлчийнх (Цуврал)",
+      "type": "series",
+      "year": 2023,
+      "genre": ["drama", "action", "sci-fi"],
+      "ratings": { "imdb": "8.8" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/uKvH5jSSyn4u7C6pXyQ9LpS696.jpg",
+      "episodes": [
+        { "episode_title": "1-р анги: Харанхуйд ганцаараа", "embed_links": ["https://www.youtube.com/embed/uLtkt8BonwM"] },
+        { "episode_title": "2-р анги: Халдвар", "embed_links": ["https://www.youtube.com/embed/uLtkt8BonwM"] },
+        { "episode_title": "3-р анги: Урт удаан хугацаа", "embed_links": ["https://www.youtube.com/embed/uLtkt8BonwM"] }
+      ]
+    },
+    {
+      "title": "Talk to Me",
+      "mongolian_title": "Намтай ярилц",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["horror"],
+      "ratings": { "imdb": "7.1" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/kdPMUMunL0ST6l9fhgYn5R7uC2n.jpg",
+      "embed_links": ["https://www.youtube.com/embed/aLAKJu9aUXg"]
+    },
+    {
+      "title": "Inception",
+      "mongolian_title": "Эхлэл",
+      "type": "movie",
+      "year": 2010,
+      "genre": ["thriller", "sci-fi"],
+      "ratings": { "imdb": "8.8" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/edvWebvCEuR2qAn6UvwyFDbAGpY.jpg",
+      "embed_links": ["https://www.youtube.com/embed/YoHD9XEInc0"]
+    },
+    {
+      "title": "Interstellar",
+      "mongolian_title": "Одод хооронд",
+      "type": "movie",
+      "year": 2014,
+      "genre": ["sci-fi"],
+      "ratings": { "imdb": "8.7" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/gEU2QniE6E07Qv8nooJuR6o1vc5.jpg",
+      "embed_links": ["https://www.youtube.com/embed/zSWdZVtXT7E"]
+    },
+    {
+      "title": "Harry Potter and the Sorcerer's Stone",
+      "mongolian_title": "Харри Поттер ба Гүн ухааны чулуу",
+      "type": "movie",
+      "year": 2001,
+      "genre": ["fantasy", "family"],
+      "ratings": { "imdb": "7.6" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/wuMc08IPKEatf9S0ArRwT6pExoY.jpg",
+      "embed_links": ["https://www.youtube.com/embed/VyHV0BRtdxo"]
+    },
+    {
+      "title": "Spider-Man: Across the Spider-Verse",
+      "mongolian_title": "Хүн аалз: Ертөнцүүдийн заагт",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["animation"],
+      "ratings": { "imdb": "8.6" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/8Vtpi9pR7vLq6tVpblKWuSV6Yp7.jpg",
+      "embed_links": ["https://www.youtube.com/embed/shW9i6k8cB0"]
+    },
+    {
+      "title": "Joker",
+      "mongolian_title": "Жокер",
+      "type": "movie",
+      "year": 2019,
+      "genre": ["crime", "drama"],
+      "ratings": { "imdb": "8.4" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/udDcl30ffi9H1UaTzwMCJsXRpG2.jpg",
+      "embed_links": ["https://www.youtube.com/embed/zAGVQLHvwOY"]
+    },
+    {
+      "title": "Past Lives",
+      "mongolian_title": "Өнгөрсөн амьдрал",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["romance"],
+      "ratings": { "imdb": "7.9" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/mSIsbsR7mZqd6M4G31NCD79l3CH.jpg",
+      "embed_links": ["https://www.youtube.com/embed/k9E32ZAgP6c"]
+    },
+    {
+      "title": "Glass Onion: A Knives Out Mystery",
+      "mongolian_title": "Хутга гаргах нууц: Шилэн сонгино",
+      "type": "movie",
+      "year": 2022,
+      "genre": ["mystery", "comedy"],
+      "ratings": { "imdb": "7.1" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/vDGr1YpSvy9o94Wp9M9Nx655o7L.jpg",
+      "embed_links": ["https://www.youtube.com/embed/gj5ibYSz8C0"]
+    },
+    {
+      "title": "Our Planet",
+      "mongolian_title": "Манай дэлхий (Баримтат цуврал)",
+      "type": "series",
+      "year": 2019,
+      "genre": ["documentary"],
+      "ratings": { "imdb": "9.3" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/99vBNp96pYArv9rIuFs97t9696p.jpg",
+      "episodes": [
+        { "episode_title": "1-р анги: Нэг дэлхий", "embed_links": ["https://www.youtube.com/embed/GfO-3Oir-qM"] },
+        { "episode_title": "2-р анги: Туйлын ертөнц", "embed_links": ["https://www.youtube.com/embed/GfO-3Oir-qM"] }
+      ]
+    },
+    {
+      "title": "Wonka",
+      "mongolian_title": "Вонка",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["family", "fantasy"],
+      "ratings": { "imdb": "7.0" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/qhbbsvSpsRl9zhv2NPO46rAtIez.jpg",
+      "embed_links": ["https://www.youtube.com/embed/otNh9b17a7M"]
+    },
+    {
+      "title": "Oppenheimer",
+      "mongolian_title": "Оппенхаймер",
+      "type": "movie",
+      "year": 2023,
+      "genre": ["history", "biography"],
+      "ratings": { "imdb": "8.4" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/8Gxv2mYqlLqzqX7KIjGCOHIlttq.jpg",
+      "embed_links": ["https://www.youtube.com/embed/uYPbbksJxIg"]
+    },
+    {
+      "title": "1917",
+      "mongolian_title": "1917",
+      "type": "movie",
+      "year": 2019,
+      "genre": ["war", "action"],
+      "ratings": { "imdb": "8.2" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/iZpe0vCU0jS0BnsrD9A469OzzjX.jpg",
+      "embed_links": ["https://www.youtube.com/embed/YqNYrYUiMfg"]
+    },
+    {
+      "title": "Elvis",
+      "mongolian_title": "Элвис",
+      "type": "movie",
+      "year": 2022,
+      "genre": ["biography", "music"],
+      "ratings": { "imdb": "7.3" },
+      "poster_link": "https://image.tmdb.org/t/p/w500/vBvFI9u6bll876PLvLDYpOWo9vN.jpg",
+      "embed_links": ["https://www.youtube.com/embed/wBDLRvjHVOY"]
+    }
+  ]
+}
